@@ -1,0 +1,378 @@
+---
+title: "Introdução"
+output:
+  html_document:
+    df_print: paged
+knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(input_file,
+  encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'introducao.html'))})
+---
+
+Um exemplo de interação que vamos ter com R pode ser feituo com o comando R.version no terminal:
+
+```{r}
+R.version
+```
+
+O comando R.version mostra uma série de informações sobre a versão do R instalada no computador. Para terminar a execução do R basta executar o  comando q(). Segue outros comandos interessantes:
+
+```{r}
+getwd()
+setwd('~')
+getwd()
+list.files()
+```
+
+O R tem um sistema de ajuda que lhe permitirá obter informações sobre a linguagem e sobre os comandos:
+
+```{r}
+help(getwd)
+?getwd
+```
+
+Quando executamos o R, somente algumas funções estão disponı́veis de imediato. Essas são as funções incluı́das nas packages incluídas e carregadas automaticamente. Para instalar uma nova package podemos usar a função install.packages que tem como argumento o nome da package a ser instalada:
+
+```{r}
+#install.packages('rpart')
+```
+
+## Objetos
+
+O R é uma linguagem OOP. Isto quer dizer que tudo está armazenado na memória do computador na forma de objetos. Para armazenar um objeto usamos os operadores de atribuição: 
+
+```{r}
+pi <- 3.1415
+e = 2.7182
+i <- ((e ^ 2) + 45)/pi
+pi
+e
+i
+```
+
+Sempre que criamos um novo objeto, ele ficará armazenado na memória do computador. Como esta é limitada, poderemos apagar os objetos sempre que não precisarmos mais deles:
+```{r}
+ls()
+rm(i)
+```
+
+## Vetores
+
+O objeto mais básico do R para guardar dados é o vetor. Um vetor é uma estrutura de dados que permite armazenar um conjunto de valores do mesmo tipo (por exemplo números) sob um mesmo nome.
+
+```{r}
+a = c('Geraldo', 'Marcelo', 'Luis')
+a
+```
+
+Os vetores podem ser do tipo caracter, lógico, numérico e complexo:
+
+```{r}
+a = c(1,2,3,4,5)
+b = c(TRUE, FALSE, T, F)
+d = c(1, NA, 3)
+a
+b
+d
+```
+
+Os elementos do vetor pode ser acessados através de índices:
+
+```{r}
+lucros <- c(100, 50, 10, 70)
+lucros[2]
+lucros[1:4]
+```
+
+As alterações nos vetores também podem ser feitas através de índices:
+
+```{r}
+lucros[2] <- 80
+lucros[2]
+lucros[1:4] <- c(70, 10, 50, 100)
+lucros
+```
+
+Podemos criar vetores vazios:
+
+```{r}
+prejuizo <- c()
+prejuizo
+mais_prejuizo <- vector()
+mais_prejuizo
+```
+
+## Operações com vetores
+
+A linguagem R é muito poderoza pois grande parte das funções são vetorizadas:
+
+```{r}
+v = c(4, 7, 23.5, 76, 80)
+v * 2
+sqrt(v)
+```
+
+```{r}
+v1 = c(1, 2, 3, 4, 5, 6)
+v2 = c(1, 2, 3, 4, 5, 6)
+v1 + v2
+v1 - v2
+v1 ^ v2
+```
+
+Podemos fazer isso quando os vetores tem dimensões diferentes? A resposa é sim se os vetores são proporcionais:
+
+```{r}
+v1 = c(1, 2, 3, 4, 5, 6)
+v2 = c(1, 2, 3)
+v1 + v2
+v1 - v2
+v1 ^ v2
+```
+
+A resposta também é sim caso não sejam:
+
+```{r}
+v1 = c(1, 2, 3, 4, 5, 6)
+v2 = c(1, 2, 3, 4)
+v1 + v2
+v1 - v2
+v1 ^ v2
+```
+
+## Fatores
+
+Os fatores proporcionam uma forma fácil e compacta de lidar com dados categóricos. Este tipo de dado pode ser visto como variáveis que podem tomar como valores possı́veis um conjunto finito derótulos  (por exemplo uma variável que
+armazene o estado civil de uma pessoa):
+
+```{r}
+civil = c('solteiro', 'casado', 'casado', 'solteiro', 'solteiro')
+estado = factor(civil)
+estado
+```
+
+Comparando os dois vetores:
+```{r}
+civil = factor(c('solteiro', 'solteiro', 'solteiro'), levels=c('casado', 'solteiro'))
+civil
+```
+
+Uma das vantagens de transformar um vetor de caracteres em um factor é a possibilidade de usar funções especı́ficas para lidar com factores. Uma dessas funções permite-nos contar o número de ocorrências de cada valor:
+
+```{r}
+table(civil)
+```
+
+Podemos utilizar a função table para tabulação cruzada:
+
+```{r}
+sexo <- factor(c('f', 'm', 'm', 'm', 'f', 'm', 'f', 'm', 'f', 'f'))
+idade <- factor(c('adulto', 'adulto', 'jovem', 'jovem', 'adulto', 'adulto', 'adulto', 'jovem', 'adulto', 'jovem'))
+aux = table(sexo, idade)
+aux
+```
+
+A frequência relativa pode ser obtida usando a função prop.table:
+
+```{r}
+prop.table(aux, 1)
+prop.table(aux, 2)
+```
+
+## Sequências
+
+Podemos gerar sequências em R de várias formas:
+
+```{r}
+1:10
+10:(15 - 1)
+10:15 - 1
+5:0
+```
+
+Para gerar sequências com números reais podemos usar a função seq:
+
+```{r}
+seq(-4, 1, 0.1)
+seq(from=1, to=10, length=100)
+```
+
+Outra função para gerar sequências:
+
+```{r}
+rep(5, 10)
+rep("yep", 3)
+rep(1:3, 5)
+rep(1:5, length.out=7)
+```
+
+O R também tem funções para gerar sequências aleatórias de acordo com uma série de funções de distribuição de probabilidade:
+
+```{r}
+rnorm(10)
+rnorm(10, mean=0, sd=1)
+rt(10, df = 100)
+```
+
+Plotando esses valores:
+
+```{r}
+valores = rnorm(1000) 
+plot(valores)
+hist(valores)
+```
+
+## Indexação
+
+O R permite usar vetores dentro de colchetes. Estes vetores recebem o nome de vetores de índices: 
+
+```{r}
+frutas = c('banana', 'maca', 'pera', 'uva', 'melancia')
+idx = c(1,2,5)
+frutas[idx]
+```
+
+Podemos fazer mais coisas como:
+
+```{r}
+frutas = rnorm(100, mean=0, sd=1)
+frutas[frutas > 0]
+frutas[frutas < -0.5 | frutas > 0.5]
+
+```
+
+Também podemos dar nomes aus elementos de um vetor:
+```{r}
+idh = c(0.7, 0.8, 0.7, 0.8, 0.9)
+names(idh) = c('BR', 'CH', 'EUA', 'FR', 'AL')
+idh
+```
+
+Podemos acessar os elementos usando os nomes:
+```{r}
+idh[c('BR', 'AL')]
+```
+
+## Matrizes
+
+Por vezes queremos armazenar as informações em estruturas de dados com mais do que uma dimensão. Em R, as matrizes são vetores com uma dimensão a mais:
+
+```{r}
+vendas <- c(45, 23, 66, 77, 33, 44, 56, 12, 78, 23, 78, 90)
+vendas
+dim(vendas) <- c(3, 4)
+vendas
+```
+
+Outra alternativa é criar uma matriz usando a função matrix:
+
+```{r}
+vendas <- matrix(c(45, 23, 66, 77, 33, 44, 56, 12, 78, 23, 78, 90), nrow=3, ncol=4)
+vendas
+```
+
+Assim como os vetores, podemos dar nomes aos índices das matrizes:
+```{r}
+rownames(vendas) = c('loja1', 'loja2', 'loja3')
+colnames(vendas) = c('elet', 'livro', 'coz', 'info')
+vendas
+```
+
+Usando os índices:
+
+```{r}
+vendas['loja1',]
+vendas[,'livro']
+vendas['loja1', 'livro']
+```
+
+As funções cbinb e rbind podem ser usadas para concatenar vetores e matrizes através das colunas ou através das linhas. Os seguintes exemplos ilustram o seu uso:
+
+```{r}
+cbind(vendas, farm=c(60, 50, 0))
+rbind(vendas, loja4=c(78, 23, 78, 90))
+```
+
+Operações com matrizes são similares as operações com vetores:
+
+```{r}
+m1 = matrix(c(5, 4, 6, 3, 10, 7), 2, 3, byrow=T)
+m2 = matrix(c(2, 1, 5, 3, 3, 8), 2, 3, byrow=T)
+m1
+m2
+m1 + m2
+m1 * m2
+m1 ^ m2
+```
+
+O R também possui operadores para operações da álgebra matricial. A multiplicação de duas matrizes pode ser feita usando o operador %*%:
+
+```{r}
+m1 = matrix(c(5, 4, 6, 3, 10, 7), 2, 3, byrow=T)
+m2 = t(m2)
+m1
+m2
+m1 %*% m2
+```
+
+## Matrizes multidimensionais
+
+As matrizes multidimensionais são extensões das matrizes para mais do que duas dimensões. 
+
+```{r}
+vendas <- c(45, 23, 66, 77, 33, 44, 56, 12, 78, 23, 78, 90)
+vendas
+dim(vendas) <- c(3, 2, 2)
+vendas
+```
+
+Outra alternativa é criar uma matriz multidimensionais usando a função array:
+
+```{r}
+vendas <- array(c(45, 23, 66, 77, 33, 44, 56, 12, 78, 23, 78, 90), dim=c(3, 2, 2))
+vendas
+```
+
+## Listas
+
+Uma lista é uma coleção ordenada de objetos. Esses objetos podem ser de tipos diferentes e tem sempre um índice ou nome associado a eles. Segue um exemplo de uma lista em R:
+
+```{r}
+aluno = list(numero = 20023441, nome = "Joao da Silva", notas = c(10, 9, 7, 10))
+aluno
+aluno[[1]]
+aluno$numero
+names(aluno)
+```
+
+As listas podem ser extendidas:
+
+```{r}
+aluno$pais = 'Br'
+aluno
+```
+
+Podemos gerar lista de listas:
+
+```{r}
+joao = list(numero = 20023441, nome = 'Joao da Silva', notas = c(10, 9, 7, 10), pais='Br')
+ana = list(numero = 20023356, nome = 'Ana da Silva', notas = c(10, 10, 8, 9), pais='Br')
+maria = list(numero = 20032459, nome = 'Maria Joana', notas = c(9, 10, 8, 7), pais='Br')
+alunos = list(joao, ana, maria)
+alunos
+```
+
+## Data Frames
+
+Um data frame é um objeto normalmente utilizado para armazenas tabelas de dados. Ele é semelhante a uma matriz mas as colunas podem conter tipos diferentes entre sí. Podemos criar um data frame da seguinte forma:
+
+```{r}
+notas = data.frame(numero = c(20023441, 20023356, 20032459, 20045654, 19054321), curso=c('BCC', 'BCC', 'BCC', 'EComp', 'EComp'), turma = c('Turma A', 'Turma A', 'Turma C', 'Turma B', 'Turma B'), notas = c(8.3, 9.3, 7.2, 8.5, 8.9), mencao=c('MS', 'SS', 'MS', 'MS', 'MS'))
+notas
+```
+
+A indexação é parecida com as feitas em matrizes:
+```{r}
+notas[notas$curso == 'BCC',]
+notas[notas$mencao == 'SS',]
+notas[notas$curso == 'BCC', 'turma']
+```
+
