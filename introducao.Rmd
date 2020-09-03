@@ -376,3 +376,17 @@ notas[notas$mencao == 'SS',]
 notas[notas$curso == 'BCC', 'turma']
 ```
 
+
+Vamos usar um data frame pré carregado:
+
+```{r}
+data(iris)
+iris
+```
+
+Podemos fazer um scterplot dessas informações:
+
+```{r}
+plot(iris[,1:4], col=iris$Species)
+```
+
