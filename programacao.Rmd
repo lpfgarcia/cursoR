@@ -1,0 +1,255 @@
+---
+title: "Programação em R"
+output:
+  html_document:
+    df_print: paged
+knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(input_file,
+  encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'programacao.html'))})
+---
+
+O R possui diversas funções de entrada e saída. As funções mais utilizadas nesse contexto são a funções print, cat e scan. Um exemplo de interação é:
+
+```{r}
+print(10)
+cat('x tem o valor de', 10, '\n')
+# lendo 5 valores
+x = scan(n=5)
+```
+
+## Condicionais
+
+As condicionais permitem ao programador explicitar diferentes alternativas a serem executadas dependendo de alguma condição a ser testada. A instrução if/else if/else, por exemplo, permite explicitar uma condição booleana e dois conjuntos de instruções alternativos que são executados dependendo do valor da condição.
+
+```{r}
+x = 10
+if (x > 5) {
+  print('maior que cinco')
+} else if (x > 0 & x <= 5) {
+  print('maior que zero e menor que cinco')
+} else {
+  print('menor que zero')
+}
+```
+
+Uma função relacionada com a instrução if é a função ifelse. Esta função permite trabalhar com vectores de condições boleanas:
+
+```{r}
+x = rnorm(10)
+ifelse(x > 0, '+', '-')
+```
+
+## Instruções Iterativas
+
+O R tem algumas instruções iterativas que nos permite repetir blocos de instruções. A instrução while é uma delas:
+
+```{r}
+x = 0
+while(x < 10) {
+  x = x + 1
+  cat('O valor de x eh', x, '\n')
+}
+```
+
+A instrução for permite controlar o número de vezes que um bloco de código será executado através de uma variável de controle. A sua sintaxe dela é:
+
+```{r}
+for(x in 1:10) {
+  cat('O valor de x eh', x, '\n')
+}
+```
+
+O R ainda tem uma família de funções que podem ser utilizadas para executar blocos de códigos de forma iterativa. A função mais conhecida dessa família é a apply que aplica, para uma matriz, uma função nas linhas (índice 1) ou nas colunas (índice 2):
+
+```{r}
+m = matrix(1:9, nrow=3, ncol=3)
+apply(m, 1, sum)
+```
+
+Ainda existem as funções lapply, sapply e mapply. Enquanto a função lapply pode ser aplicada em uma lista, a função mapply pode ser aplicada em um conjunto de listas:
+
+```{r}
+lapply(1:5, function(i) {
+  aux = sample(seq(-10, 10, by=0.0001), 10)
+  sum(aux)
+})
+```
+
+```{r}
+loja = list('l1', 'l2', 'l3')
+valor = list(1:10, 11:20, 21:30)
+
+aux = mapply(function(val, loj) {
+  cat('A loja', loj, 'tem faturado o valor de', sum(val), '\n')
+}, val=valor, loj=loja)
+```
+
+Uma dessas funções, a mclapply permite a execução de blocos de código como a a lapply mas de forma paralela. Para utiliza-la precisamos carrecar a bibliteca parallel:
+
+```{r}
+require('parallel')
+mclapply(1:5, mc.cores=4, function(i) {
+  aux = sample(seq(-10, 10, by=0.0001), 10)
+  sum(aux)
+})
+```
+
+Podemos comparar o tempo de execução dessas intruções por meio da função system.time:
+
+```{r}
+system.time(lapply(1:100, function(i) {
+  aux = seq(-10, 10, by=0.00001)
+  sum(aux)
+}))[3]
+
+system.time(mclapply(1:100, mc.cores=4, function(i) {
+  aux = seq(-10, 10, by=0.00001)
+  sum(aux)
+}))[3]
+```
+
+## Funções
+
+A criação de uma função consiste na atribuição do conteúdo de uma função a um nome. Os conteúdos são os argumentos e o corpo da função:
+
+```{r}
+cel2far <- function(cel) {
+  return (9/5 * cel + 32)
+}
+#chamando a função
+cel = c(32, 26, 21, 17.5, 35.6, 42.5)
+cel2far(cel)
+```
+
+## Lista de funções úteis
+
+Funções de estatística básica:
+
+```{r}
+x = sample(seq(-10, 10, 0.1), 10)
+# soma
+sum(x)
+# valor máximo
+max(x)
+# valor mínimo
+min(x)
+# índice do valor máximo
+which.max(x)
+# índice do valor mínimo
+which.min(x)
+# valor mínimo e máximo
+range(x)
+# tamanho do vetor
+length(x)
+# media dos valores do vetor
+mean(x)
+# mediana dos valores do vetor
+median(x)
+# desvio padrão dos valores do vetor
+sd(x)
+# variancia dos valores do vetor
+var(x)
+# quartis
+quantile(x)
+# normalização com media 0 e desvio 1
+scale(x)
+```
+
+Funções de operações vetoriais:
+
+```{r}
+x = c(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+y = c(1, 2, 3)
+# ordenando o vetor
+sort(x)
+# ordem inversa do vetor
+rev(x)
+# ranking dos valores
+rank(x)
+# raiz quadrada
+sqrt(x)
+# soma acumulada
+cumsum(x)
+# produto acumulado
+cumprod(x)
+# união entre dois conjuntos
+union(x, y)
+# interseccao entre dois conjuntos
+intersect(x, y)
+# a diferenca de x para y
+setdiff(x, y)
+```
+
+Álgebra Matricial
+
+```{r}
+x = matrix(sample(seq(-10, 10, 0.1), 9), nrow=3, ncol=3)
+y = matrix(sample(seq(-10, 10, 0.1), 9), nrow=3, ncol=3)
+# diaginal principal
+diag(x)
+# matriz transposta
+t(x)
+# numero de linhas
+nrow(x)
+# numero de colunas
+ncol(x)
+# pruduto entre dois vetores
+x %*% y
+# determinante 
+det(x)
+```
+
+## Carregar e visualizar dados
+
+Os arquivos de texto são uma das formas mais comuns de armazenar dados. O formato de aruqivo mais comum é o CSV mas diversos outros tipos e formatos de arquivos são aceitos. Dentre eles temos o xls e o arff. Primeiro vamos criar uma arquivo CSV:
+
+```{r}
+system(paste("printf 'ID;Nome;Nota\n434;Carlos;13.2\n523;Ana;15.1\n874;Susana;4.8\n103;Joaquim;15.9\n' > teste1.csv"))
+```
+
+Agora podemos ler esse arquivo utilizando a função read.table. Sabemos que essa base de dados se chama teste1, utiliza como separador ';' e tem cabeçalho:
+
+```{r}
+data = read.table('teste1.csv', sep=';', header=T)
+data
+```
+
+Também podemos baixar bases de dados da internet utilizando a função download.file:
+
+```{r}
+download.file('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data', 'teste2.csv')
+data = read.table('teste2.csv', sep= ',', header=F)
+colnames(data) = c('Sepal.Length', 'Sepal.Width', 'Petal.Length', 'Petal.Width', 'Species')
+data$Species = factor(data$Species)
+```
+
+Podemos fazer um scaterplot dessa base de dados:
+
+```{r}
+plot(data[,1:4], col=data$Species)
+```
+
+O histograma de cada variável:
+
+```{r}
+par(mfrow=c(2,2))
+histout=apply(data[,1:4], 2, hist)
+```
+
+O boxplot de cada variável:
+
+```{r}
+boxplot(data[,1:4])
+```
+
+O boxplot de cada variável:
+
+```{r}
+if(!require('plot3D')){
+  install.packages("plot3D")
+}
+
+require('plot3D')
+scatter3D(x=data[,2], y=data[,3], z=data[,4], colvar=as.integer(iris$Species), colkey=FALSE)
+```
+
+
