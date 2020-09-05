@@ -1,0 +1,157 @@
+---
+title: "Ciência de Dados"
+output:
+  html_document:
+    df_print: paged
+knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(input_file,
+  encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'cienciadados.html'))})
+---
+
+O objetivo desse notebook é aplicar a Linguagem R em Ciência de Dados na resolução de problemas de forma supervisionada e não supervisionada. 
+
+## Comprimindo Imagens
+
+Um experimento interessante é a tarefa de comprimir imagens utilizando o algoritmo de agrupamento KMeans. Para a compressão, o número de cores precisa ser reduzido. A redução é feita através do agrupamento das cores e seleção daquelas mais frequentes. Para isso precisamos carregar a blbioteca imager:   
+
+```{r}
+if(!require('imager')) {
+  install.packages('imager')
+}
+
+require('imager')
+```
+
+Algumas imagens são pré-carregadas pelo pacote como a imagem de barcos:
+
+```{r}
+plot(boats, axes=FALSE)
+```
+
+Vamos salvar a imagem original em um arquivo e imprimir seu tamanho em disco:
+
+```{r}
+save(boats, file='boats1.zip')
+cat('Tamanho da imagem original:', file.info("boats1.zip")$size, 'bytes')
+```
+
+Podemos extrair informações sobre o objeto da seguinte forma:
+
+```{r}
+boats
+dim(boats)
+```
+
+Gerando o data.frame da imagem boats:
+
+```{r}
+image = as.data.frame(boats)
+# cabecalho do data.frame
+head(image)
+```
+
+Podemos separar as cores RGB da imagem da seguinte forma: 
+
+```{r}
+red = image[image$cc == 1, 'value']
+blue = image[image$cc == 2, 'value']
+green = image[image$cc == 3, 'value']
+```
+
+O histograma das cores é:
+
+```{r}
+par(mfrow=c(1,3))
+hist(red) 
+hist(blue) 
+hist(green) 
+```
+
+Reconstruindo a base de dados em um data.frame:
+
+```{r}
+data = data.frame(red, blue, green)
+```
+
+Aplicando o KMeans com 10 centroides e 500 iterações máximas:
+
+```{r}
+centroides = kmeans(data, centers=10, iter.max=500, nstart=30, algorithm="MacQueen")
+summary(centroides)
+```
+
+Adicionando os centroides encontrados em data:
+
+```{r}
+data[,"cluster"] = centroides$cluster
+head(data)
+```
+
+O próximo passo é reconstruir a imagem utilizando as cores identificadas como centroides. A imagem será reconstrída com as 10 cores principais:
+
+```{r}
+new_data = do.call('rbind',
+  lapply(1:nrow(data), function(i) {
+    centroides$centers[data[i,4],]
+  })
+)
+```
+
+Plotando a nova imagem:
+
+```{r}
+new_image = image
+new_image$value = c(new_data[,1], new_data[,2], new_data[,3])
+new_image = as.cimg(new_image)
+plot(new_image, axes=FALSE)
+```
+
+Vamos salvar a nova imagem em um arquivo e imprimir o seu tamanho comprimido em disco:
+
+```{r}
+save(new_image, file='boats2.zip')
+cat('Tamanho da imagem comprimida:', file.info("boats2.zip")$size, 'bytes')
+```
+
+Antes de continuar com o experimento, vamos construir a função imageGenerator que recebe uma imagem e o número de centroides e retorna uma nova imagem comprimida:
+
+```{r}
+imageGenerator <- function(image, centers) {
+  
+  image = as.data.frame(image)
+  red = image[image$cc == 1, 'value']
+  blue = image[image$cc == 2, 'value']
+  green = image[image$cc == 3, 'value']
+  data = data.frame(red, blue, green)
+  
+  centroides = kmeans(data, centers, iter.max=500, nstart=30, algorithm="MacQueen")
+  data[,"cluster"] = centroides$cluster
+
+  new_data = do.call('rbind',
+    lapply(1:nrow(data), function(i) {
+      centroides$centers[data[i,4],]
+    })
+  )
+  
+  new_image = image
+  new_image$value = c(new_data[,1], new_data[,2], new_data[,3])
+  as.cimg(new_image)
+}
+```
+
+Usando a função imageGenerator podemos gerar diferentes imagens com diferentes números de cores. Segue o resultado do experimento para 10, 32, 64 e 128 cores:
+
+```{r}
+par(mfrow=c(2,2))
+plot = sapply(c(10, 32, 64, 128), function(i) {
+  plot(imageGenerator(boats, i), axes=FALSE)
+})
+```
+
+## Classificando dígitos
+
+
+
+
+
+
+
