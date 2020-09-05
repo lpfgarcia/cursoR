@@ -49,21 +49,33 @@ image = as.data.frame(boats)
 head(image)
 ```
 
+Podemos deixar a imagem borrada:
+
+```{r}
+plot(isoblur(boats, 10))
+```
+
+Podemos deixar a imagem em escala de cinza:
+
+```{r}
+plot(grayscale(boats))
+```
+
+Podemos remover a cor vermelha da imagem:
+
+```{r}
+test_image = image
+test_image[test_image$cc == 1, 'value'] = 0
+test_image = as.cimg(test_image)
+plot(test_image, axes=FALSE)
+```
+
 Podemos separar as cores RGB da imagem da seguinte forma: 
 
 ```{r}
 red = image[image$cc == 1, 'value']
 blue = image[image$cc == 2, 'value']
 green = image[image$cc == 3, 'value']
-```
-
-O histograma das cores é:
-
-```{r}
-par(mfrow=c(1,3))
-hist(red) 
-hist(blue) 
-hist(green) 
 ```
 
 Reconstruindo a base de dados em um data.frame:
