@@ -7,6 +7,10 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
   encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'programacao.html'))})
 ---
 
+O objetivo desse notebook é apresentar as principais instruções da linguagem R que nos permite desenvolver programas.
+
+## Entrada/Saída
+
 O R possui diversas funções de entrada e saída. As funções mais utilizadas nesse contexto são a funções print, cat e scan. Um exemplo de interação é:
 
 ```{r}
@@ -31,7 +35,7 @@ if (x > 5) {
 }
 ```
 
-Uma função relacionada com a instrução if é a função ifelse. Esta função permite trabalhar com vectores de condições boleanas:
+Uma função relacionada com a instrução if é a função ifelse. Esta função permite trabalhar com vetores de condições booleanas:
 
 ```{r}
 x = rnorm(10)
@@ -50,7 +54,7 @@ while(x < 10) {
 }
 ```
 
-A instrução for permite controlar o número de vezes que um bloco de código será executado através de uma variável de controle. A sua sintaxe dela é:
+A instrução for permite controlar o número de vezes que um bloco de código será executado através de uma variável de controle. A sua sintaxe é:
 
 ```{r}
 for(x in 1:10) {
@@ -62,7 +66,7 @@ O R ainda tem uma família de funções que podem ser utilizadas para executar b
 
 ```{r}
 m = matrix(1:9, nrow=3, ncol=3)
-apply(m, 1, sum)
+plot = apply(m, 1, sum)
 ```
 
 Ainda existem as funções lapply, sapply e mapply. Enquanto a função lapply pode ser aplicada em uma lista, a função mapply pode ser aplicada em um conjunto de listas:
@@ -72,9 +76,7 @@ lapply(1:5, function(i) {
   aux = sample(seq(-10, 10, by=0.0001), 10)
   sum(aux)
 })
-```
 
-```{r}
 loja = list('l1', 'l2', 'l3')
 valor = list(1:10, 11:20, 21:30)
 
@@ -83,7 +85,7 @@ aux = mapply(function(val, loj) {
 }, val=valor, loj=loja)
 ```
 
-Uma dessas funções, a mclapply permite a execução de blocos de código como a a lapply mas de forma paralela. Para utiliza-la precisamos carrecar a bibliteca parallel:
+Uma dessas funções, a mclapply permite a execução de blocos de código como a lapply mas de forma paralela. Para utiliza-la precisamos carrecar a biblioteca parallel:
 
 ```{r}
 require('parallel')
@@ -200,7 +202,7 @@ det(x)
 
 ## Carregar e visualizar dados
 
-Os arquivos de texto são uma das formas mais comuns de armazenar dados. O formato de aruqivo mais comum é o CSV mas diversos outros tipos e formatos de arquivos são aceitos. Dentre eles temos o xls e o arff. Primeiro vamos criar uma arquivo CSV:
+Os arquivos de texto são uma das formas mais comuns de armazenar dados. O formato de arquivo mais comum é o CSV mas diversos outros tipos e formatos de arquivos são aceitos. Dentre eles temos o xls e o arff. Primeiro vamos criar uma arquivo CSV:
 
 ```{r}
 system(paste("printf 'ID;Nome;Nota\n434;Carlos;13.2\n523;Ana;15.1\n874;Susana;4.8\n103;Joaquim;15.9\n' > teste1.csv"))
@@ -232,7 +234,7 @@ O histograma de cada variável:
 
 ```{r}
 par(mfrow=c(2,2))
-histout=apply(data[,1:4], 2, hist)
+plot = apply(data[,1:4], 2, hist)
 ```
 
 O boxplot de cada variável:
@@ -241,7 +243,7 @@ O boxplot de cada variável:
 boxplot(data[,1:4])
 ```
 
-O boxplot de cada variável:
+Existem diversas bibliotecas para representação da informação em 3D. Uma delas é a biblioteca plot3D. 
 
 ```{r}
 if(!require('plot3D')){
@@ -249,7 +251,13 @@ if(!require('plot3D')){
 }
 
 require('plot3D')
-scatter3D(x=data[,2], y=data[,3], z=data[,4], colvar=as.integer(iris$Species), colkey=FALSE)
 ```
 
+O plot 3D de das três variáveis mais informativas da base Iris pode ser feita da seguinte forma:
 
+```{r}
+par(mfrow=c(1,3))
+scatter3D(x=data[,2], y=data[,3], z=data[,4], colvar=as.integer(data$Species), colkey=FALSE, theta=30, phi=0)
+scatter3D(x=data[,2], y=data[,3], z=data[,4], colvar=as.integer(data$Species), colkey=FALSE, theta=60, phi=0)
+scatter3D(x=data[,2], y=data[,3], z=data[,4], colvar=as.integer(data$Species), colkey=FALSE, theta=90, phi=0)
+```
