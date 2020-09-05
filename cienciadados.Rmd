@@ -52,13 +52,13 @@ head(image)
 Podemos deixar a imagem borrada:
 
 ```{r}
-plot(isoblur(boats, 10))
+plot(isoblur(boats, 10), axes=FALSE)
 ```
 
 Podemos deixar a imagem em escala de cinza:
 
 ```{r}
-plot(grayscale(boats))
+plot(grayscale(boats), axes=FALSE)
 ```
 
 Podemos remover a cor vermelha da imagem:
