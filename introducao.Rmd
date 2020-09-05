@@ -1,5 +1,5 @@
 ---
-title: "Introdução"
+title: "Linguagem R"
 output:
   html_document:
     df_print: paged
@@ -7,13 +7,17 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
   encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'introducao.html'))})
 ---
 
-Um exemplo de interação que vamos ter com R pode ser feituo com o comando R.version no terminal:
+O objetivo desse notebook é apresentar os principais conceitos e comandos da Linguagem R.  
+
+## Introdução
+
+Depois da instalação do R, o próximo passo é desvendar seus minstérios. Um exemplo de interação que vamos ter com R pode ser feito com o comando R.version no terminal:
 
 ```{r}
 R.version
 ```
 
-O comando R.version mostra uma série de informações sobre a versão do R instalada no computador. Para terminar a execução do R basta executar o  comando q(). Segue outros comandos interessantes:
+O comando R.version mostra uma série de informações sobre a versão do R instalada no computador. Para terminar a execução do R basta executar o  comando q. Seguem outros comandos interessantes:
 
 ```{r}
 getwd()
@@ -29,7 +33,7 @@ help(getwd)
 ?getwd
 ```
 
-Quando executamos o R, somente algumas funções estão disponı́veis de imediato. Essas são as funções incluı́das nas packages incluídas e carregadas automaticamente. Para instalar uma nova package podemos usar a função install.packages que tem como argumento o nome da package a ser instalada:
+Quando executamos o R, somente algumas funções estão disponı́veis de imediato. Essas são as funções incluídas nos pacotes carregados automaticamente. Para instalar uma nova package podemos usar a função install.packages que tem como argumento o nome da package a ser instalada:
 
 ```{r}
 #install.packages('rpart')
@@ -49,6 +53,7 @@ i
 ```
 
 Sempre que criamos um novo objeto, ele ficará armazenado na memória do computador. Como esta é limitada, poderemos apagar os objetos sempre que não precisarmos mais deles:
+
 ```{r}
 ls()
 rm(i)
@@ -56,7 +61,7 @@ rm(i)
 
 ## Vetores
 
-O objeto mais básico do R para guardar dados é o vetor. Um vetor é uma estrutura de dados que permite armazenar um conjunto de valores do mesmo tipo (por exemplo números) sob um mesmo nome.
+O objeto mais básico do R para guardar dados é o vetor. Um vetor é uma estrutura de dado que permite armazenar um conjunto de valores do mesmo tipo (por exemplo números) sob um mesmo nome.
 
 ```{r}
 a = c('Geraldo', 'Marcelo', 'Luis')
@@ -108,9 +113,6 @@ A linguagem R é muito poderoza pois grande parte das funções são vetorizadas
 v = c(4, 7, 23.5, 76, 80)
 v * 2
 sqrt(v)
-```
-
-```{r}
 v1 = c(1, 2, 3, 4, 5, 6)
 v2 = c(1, 2, 3, 4, 5, 6)
 v1 + v2
@@ -140,7 +142,7 @@ v1 ^ v2
 
 ## Fatores
 
-Os fatores proporcionam uma forma fácil e compacta de lidar com dados categóricos. Este tipo de dado pode ser visto como variáveis que podem tomar como valores possı́veis um conjunto finito derótulos  (por exemplo uma variável que
+Os fatores proporcionam uma forma fácil e compacta de lidar com dados categóricos. Este tipo de dado pode ser visto como variáveis que podem tomar como valores possı́veis um conjunto finito d erótulos (por exemplo uma variável que
 armazene o estado civil de uma pessoa):
 
 ```{r}
@@ -150,6 +152,7 @@ estado
 ```
 
 Comparando os dois vetores:
+
 ```{r}
 civil = factor(c('solteiro', 'solteiro', 'solteiro'), levels=c('casado', 'solteiro'))
 civil
@@ -240,6 +243,7 @@ frutas[frutas < -0.5 | frutas > 0.5]
 ```
 
 Também podemos dar nomes aus elementos de um vetor:
+
 ```{r}
 idh = c(0.7, 0.8, 0.7, 0.8, 0.9)
 names(idh) = c('BR', 'CH', 'EUA', 'FR', 'AL')
@@ -247,6 +251,7 @@ idh
 ```
 
 Podemos acessar os elementos usando os nomes:
+
 ```{r}
 idh[c('BR', 'AL')]
 ```
@@ -270,6 +275,7 @@ vendas
 ```
 
 Assim como os vetores, podemos dar nomes aos índices das matrizes:
+
 ```{r}
 rownames(vendas) = c('loja1', 'loja2', 'loja3')
 colnames(vendas) = c('elet', 'livro', 'coz', 'info')
@@ -370,12 +376,12 @@ notas
 ```
 
 A indexação é parecida com as feitas em matrizes:
+
 ```{r}
 notas[notas$curso == 'BCC',]
 notas[notas$mencao == 'SS',]
 notas[notas$curso == 'BCC', 'turma']
 ```
-
 
 Vamos usar um data frame pré carregado:
 
@@ -384,7 +390,7 @@ data(iris)
 iris
 ```
 
-Podemos fazer um scterplot dessas informações:
+Podemos fazer um scaterplot dessas informações:
 
 ```{r}
 plot(iris[,1:4], col=iris$Species)
