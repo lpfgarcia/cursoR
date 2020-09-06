@@ -161,9 +161,91 @@ plot = sapply(c(10, 32, 64, 128), function(i) {
 
 ## Classificando dígitos
 
+```{r}
+if(!require('tensorflow')) {
+  install.packages('tensorflow')
+}
 
+require('tensorflow')
+```
 
+```{r}
+if(!require('keras')) {
+  install.packages('keras')
+}
 
+require('keras')
+```
 
+```{r}
+mnist <- dataset_mnist()
+```
 
+```{r}
+show_digit = function(numero, col = gray(12:1 / 12)) {
+  image(numero[1:28,28:1], col=col)
+}
+```
 
+```{r}
+par(mfrow=c(2,5))
+plot = lapply(0:9, function(i) {
+  aux = mnist$train$x[mnist$train$y == i,,][1,,]
+  show_digit(t(aux))
+})
+```
+
+```{r}
+mnist$train$x <- mnist$train$x/255
+mnist$test$x <- mnist$test$x/255
+```
+
+```{r}
+modelo = keras_model_sequential() %>% 
+  layer_flatten(input_shape = c(28, 28)) %>% 
+  layer_dense(units = 128, activation = "relu") %>% 
+  layer_dropout(0.2) %>% 
+  layer_dense(10, activation = "softmax")
+```
+
+Informações sobre a Rede Neural Artificial:
+
+```{r}
+summary(modelo)
+```
+
+```{r}
+modelo %>% 
+  compile(
+    loss = "sparse_categorical_crossentropy",
+    optimizer = "adam",
+    metrics = "accuracy"
+  )
+```
+
+```{r}
+historico = modelo %>% 
+  fit(
+    x = mnist$train$x, y = mnist$train$y,
+    epochs = 10,
+    validation_split = 0.3,
+    verbose = 2
+  )
+plot(historico)
+```
+
+```{r}
+predicao <- predict(modelo, mnist$test$x)
+head(predicao)
+```
+
+```{r}
+predicao = apply(predicao, 1, which.max)
+predicao[1:100]
+```
+
+```{r}
+matriz = table(mnist$test$y, predicao)
+acuracia = sum(diag(matriz))/sum(matriz)
+cat('A acurácia do modelo no conjunto de teste eh:', acuracia)
+```
