@@ -215,14 +215,6 @@ rnorm(10, mean=0, sd=1)
 rt(10, df = 100)
 ```
 
-Plotando esses valores:
-
-```{r}
-valores = rnorm(1000) 
-plot(valores)
-hist(valores)
-```
-
 ## Indexação
 
 O R permite usar vetores dentro de colchetes. Estes vetores recebem o nome de vetores de índices: 
@@ -366,7 +358,7 @@ alunos = list(joao, ana, maria)
 alunos
 ```
 
-## Data Frames
+## Data frames
 
 Um data frame é um objeto normalmente utilizado para armazenas tabelas de dados. Ele é semelhante a uma matriz mas as colunas podem conter tipos diferentes entre sí. Podemos criar um data frame da seguinte forma:
 
@@ -390,9 +382,80 @@ data(iris)
 iris
 ```
 
-Podemos fazer um scaterplot dessas informações:
+## Lista de funções úteis
+
+Funções de estatística básica:
 
 ```{r}
-plot(iris[,1:4], col=iris$Species)
+x = sample(seq(-10, 10, 0.1), 10)
+# soma
+sum(x)
+# valor máximo
+max(x)
+# valor mínimo
+min(x)
+# índice do valor máximo
+which.max(x)
+# índice do valor mínimo
+which.min(x)
+# valor mínimo e máximo
+range(x)
+# tamanho do vetor
+length(x)
+# media dos valores do vetor
+mean(x)
+# mediana dos valores do vetor
+median(x)
+# desvio padrão dos valores do vetor
+sd(x)
+# variancia dos valores do vetor
+var(x)
+# quartis
+quantile(x)
+# normalização com media 0 e desvio 1
+scale(x)
 ```
 
+Funções de operações vetoriais:
+
+```{r}
+x = c(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+y = c(1, 2, 3)
+# ordenando o vetor
+sort(x)
+# ordem inversa do vetor
+rev(x)
+# ranking dos valores
+rank(x)
+# raiz quadrada
+sqrt(x)
+# soma acumulada
+cumsum(x)
+# produto acumulado
+cumprod(x)
+# união entre dois conjuntos
+union(x, y)
+# interseccao entre dois conjuntos
+intersect(x, y)
+# a diferenca de x para y
+setdiff(x, y)
+```
+
+Álgebra Matricial
+
+```{r}
+x = matrix(sample(seq(-10, 10, 0.1), 9), nrow=3, ncol=3)
+y = matrix(sample(seq(-10, 10, 0.1), 9), nrow=3, ncol=3)
+# diaginal principal
+diag(x)
+# matriz transposta
+t(x)
+# numero de linhas
+nrow(x)
+# numero de colunas
+ncol(x)
+# pruduto entre dois vetores
+x %*% y
+# determinante 
+det(x)
+```

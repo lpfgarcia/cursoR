@@ -66,7 +66,7 @@ O R ainda tem uma família de funções que podem ser utilizadas para executar b
 
 ```{r}
 m = matrix(1:9, nrow=3, ncol=3)
-plot = apply(m, 1, sum)
+apply(m, 1, sum)
 ```
 
 Ainda existem as funções lapply, sapply e mapply. Enquanto a função lapply pode ser aplicada em uma lista, a função mapply pode ser aplicada em um conjunto de listas:
@@ -109,7 +109,7 @@ system.time(mclapply(1:100, mc.cores=4, function(i) {
 }))[3]
 ```
 
-## Funções
+## Definindo funções
 
 A criação de uma função consiste na atribuição do conteúdo de uma função a um nome. Os conteúdos são os argumentos e o corpo da função:
 
@@ -122,85 +122,7 @@ cel = c(32, 26, 21, 17.5, 35.6, 42.5)
 cel2far(cel)
 ```
 
-## Lista de funções úteis
-
-Funções de estatística básica:
-
-```{r}
-x = sample(seq(-10, 10, 0.1), 10)
-# soma
-sum(x)
-# valor máximo
-max(x)
-# valor mínimo
-min(x)
-# índice do valor máximo
-which.max(x)
-# índice do valor mínimo
-which.min(x)
-# valor mínimo e máximo
-range(x)
-# tamanho do vetor
-length(x)
-# media dos valores do vetor
-mean(x)
-# mediana dos valores do vetor
-median(x)
-# desvio padrão dos valores do vetor
-sd(x)
-# variancia dos valores do vetor
-var(x)
-# quartis
-quantile(x)
-# normalização com media 0 e desvio 1
-scale(x)
-```
-
-Funções de operações vetoriais:
-
-```{r}
-x = c(10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
-y = c(1, 2, 3)
-# ordenando o vetor
-sort(x)
-# ordem inversa do vetor
-rev(x)
-# ranking dos valores
-rank(x)
-# raiz quadrada
-sqrt(x)
-# soma acumulada
-cumsum(x)
-# produto acumulado
-cumprod(x)
-# união entre dois conjuntos
-union(x, y)
-# interseccao entre dois conjuntos
-intersect(x, y)
-# a diferenca de x para y
-setdiff(x, y)
-```
-
-Álgebra Matricial
-
-```{r}
-x = matrix(sample(seq(-10, 10, 0.1), 9), nrow=3, ncol=3)
-y = matrix(sample(seq(-10, 10, 0.1), 9), nrow=3, ncol=3)
-# diaginal principal
-diag(x)
-# matriz transposta
-t(x)
-# numero de linhas
-nrow(x)
-# numero de colunas
-ncol(x)
-# pruduto entre dois vetores
-x %*% y
-# determinante 
-det(x)
-```
-
-## Carregar e visualizar dados
+## Carregar bases de dados
 
 Os arquivos de texto são uma das formas mais comuns de armazenar dados. O formato de arquivo mais comum é o CSV mas diversos outros tipos e formatos de arquivos são aceitos. Dentre eles temos o xls e o arff. Primeiro vamos criar uma arquivo CSV:
 
@@ -215,35 +137,67 @@ data = read.table('teste1.csv', sep=';', header=T)
 data
 ```
 
-Também podemos baixar bases de dados da internet utilizando a função download.file:
+Também podemos baixar bases de dados da internet utilizando a função download.file. 
 
 ```{r}
 download.file('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data', 'teste2.csv')
 data = read.table('teste2.csv', sep= ',', header=F)
-colnames(data) = c('Sepal.Length', 'Sepal.Width', 'Petal.Length', 'Petal.Width', 'Species')
-data$Species = factor(data$Species)
 ```
+
+A base de dados que iremos utilizar é a base iris que também pode ser carregada de forma direta. Ela representa a informação da largura e comprimento da pétala e sépala de 3 especies de flores iris: 
+
+```{r}
+iris
+```
+
+Sumarizando informações da base de dados:
+
+```{r}
+summary(iris)
+```
+
+## Visualizar bases de dados
 
 Podemos fazer um scaterplot dessa base de dados:
 
 ```{r}
-plot(data[,1:4], col=data$Species)
+plot(iris[,1:4], col=iris$Species)
 ```
 
 O histograma de cada variável:
 
 ```{r}
 par(mfrow=c(2,2))
-plot = apply(data[,1:4], 2, hist)
+plot = apply(iris[,1:4], 2, hist)
 ```
 
 O boxplot de cada variável:
 
 ```{r}
-boxplot(data[,1:4])
+boxplot(iris[,1:4])
 ```
 
-Existem diversas bibliotecas para representação da informação em 3D. Uma delas é a biblioteca plot3D. 
+Podemos utilizar o PCA para alterar a representação dos dados originais:
+
+```{r}
+pca = prcomp(iris[,1:4])
+summary(pca)
+```
+
+Variância acumulada das componentes principais:
+
+```{r}
+round(cumsum(pca$sdev)/sum(pca$sdev), 2)
+```
+
+Modificando a base de dados:
+
+```{r}
+data = data.frame(pca$x, Species=iris$Species)
+plot(data[,1:2], col=data$Species)
+```
+
+Outra forma de representar os dados é utilizar um gráfico 3D. Existem diversas bibliotecas para isso. Uma delas é a biblioteca plot3D. 
 
 ```{r}
 if(!require('plot3D')){
@@ -256,8 +210,58 @@ require('plot3D')
 O plot 3D de das três variáveis mais informativas da base Iris pode ser feita da seguinte forma:
 
 ```{r}
-par(mfrow=c(1,3))
-scatter3D(x=data[,2], y=data[,3], z=data[,4], colvar=as.integer(data$Species), colkey=FALSE, theta=30, phi=0)
-scatter3D(x=data[,2], y=data[,3], z=data[,4], colvar=as.integer(data$Species), colkey=FALSE, theta=60, phi=0)
-scatter3D(x=data[,2], y=data[,3], z=data[,4], colvar=as.integer(data$Species), colkey=FALSE, theta=90, phi=0)
+par(mfrow=c(2,3))
+scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=30, phi=0)
+scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=60, phi=30)
+scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=90, phi=60)
+scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=120, phi=90)
+scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=150, phi=120)
+scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=180, phi=150)
+```
+
+## Fórmulas
+
+A fórmula é uma maneira de representar a informação em R que relaciona uma variável com outras. Segue exemplos de seu uso:
+
+```{r}
+formula('Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width')
+formula('Species ~ Sepal.Length - Sepal.Width + Petal.Length + Petal.Width')
+formula('Species ~ .')
+```
+
+Podemos usar fórmulas para analisar o comportamento das varíaveis por classe como nos boxplots:
+
+```{r}
+par(mfrow=c(2,2))
+boxplot(Sepal.Length ~ Species, iris)
+boxplot(Sepal.Width ~ Species, iris)
+boxplot(Petal.Length ~ Species, iris)
+boxplot(Petal.Width ~ Species, iris)
+```
+
+Vamos utilizar a base de dados cars. Ela registra informações referentes a distância de frenagem e sua velocidade para carros de diferentes marcas. Os dados da base são de carros de 1920.
+
+```{r}
+cars
+plot(cars)
+```
+
+Também podemos usar fórmulas para obter modelos. A seguir usamos a função lm para induzir um modelos de regressão linear que relaciona a variável 'dist' com a variável 'speed' usando os dados do conjunto de dados cars:
+
+```{r}
+modelo = lm(dist ~ speed, data=cars)
+```
+
+Podemos gerar alguns dados para testar o modelo de regressão linear. Para isso vamos gerar diversos valores de velocidade e realizar a predição:
+
+```{r}
+aux = data.frame(speed=seq(0, 30, by=0.1))
+predicao = predict(modelo, aux)
+```
+
+Representando a informação:
+
+```{r}
+plot(cars)
+lines(cbind(aux,predicao))
 ```
