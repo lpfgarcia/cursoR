@@ -7,7 +7,7 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
   encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'cienciadados.html'))})
 ---
 
-O objetivo desse notebook é aplicar a Linguagem R em Ciência de Dados na resolução de problemas de forma supervisionada e não supervisionada. 
+O objetivo desse notebook é aplicar a Linguagem R em Ciência de Dados na resolução de problemas de forma não supervisionada e supervisionada. 
 
 ## Comprimindo Imagens
 
@@ -161,6 +161,8 @@ plot = sapply(c(10, 32, 64, 128), function(i) {
 
 ## Classificando dígitos
 
+Um experimento interessante é a tarefa de classificar dígitos utilizando o algoritmo de Redes Neurais Artificiais. Para isso precisamos relizar os experimentos em duas fases: (1) treinar a rede para reconhecer os dígitos e (2) utilizá-la para classificar novos dígitos. Para isso precisamos carregar as blbiotecas tensorflow e keras:  
+
 ```{r}
 if(!require('tensorflow')) {
   install.packages('tensorflow')
@@ -177,15 +179,21 @@ if(!require('keras')) {
 require('keras')
 ```
 
-```{r}
-mnist <- dataset_mnist()
-```
+A base de dados de dígitos se chama MNIST e pode ser carregada com a função dataset_mnist. Ela contém 60000 amostras dos dígitos 0 até 9. Cada dígito é uma imagem de 28 x 28 pixels. 
 
 ```{r}
-show_digit = function(numero, col = gray(12:1 / 12)) {
-  image(numero[1:28,28:1], col=col)
+mnist = dataset_mnist()
+```
+
+A função show_digit recebe um dígito na forma de uma matriz 28 x 28 e imprime o dígito na forma de imagem. 
+
+```{r}
+show_digit <- function(numero) {
+  image(numero[1:28,28:1])
 }
 ```
+
+Podemos utilizar a função show_digit para plotar uma amostra de todos os dígitos presentes na base de dados: 
 
 ```{r}
 par(mfrow=c(2,5))
@@ -195,16 +203,19 @@ plot = lapply(0:9, function(i) {
 })
 ```
 
+Normalizando os dados de treinamento e teste:
+
 ```{r}
 mnist$train$x <- mnist$train$x/255
 mnist$test$x <- mnist$test$x/255
 ```
 
+Construindo uma Rede Neural Artificial usando Keras. Essa rede é composta de uma camanda de entrada flatten (achatada de 28 x 28 neurônios), uma camada oculta dense (128 neurônios com função de ativação linear) e uma camada de saída dense (10 neurônios com função de ativação exponencial normalizada) 
+
 ```{r}
 modelo = keras_model_sequential() %>% 
   layer_flatten(input_shape = c(28, 28)) %>% 
   layer_dense(units = 128, activation = "relu") %>% 
-  layer_dropout(0.2) %>% 
   layer_dense(10, activation = "softmax")
 ```
 
@@ -213,6 +224,8 @@ Informações sobre a Rede Neural Artificial:
 ```{r}
 summary(modelo)
 ```
+
+Ainda precisamos definir o algoritmo de treinamento, a função de avaliação e a medida de desempenho que vamos utilizar. Podemos fazer isso com a função compile:
 
 ```{r}
 modelo %>% 
@@ -223,6 +236,8 @@ modelo %>%
   )
 ```
 
+Agora podemos treinar a rede:
+
 ```{r}
 historico = modelo %>% 
   fit(
@@ -231,18 +246,29 @@ historico = modelo %>%
     validation_split = 0.3,
     verbose = 2
   )
+```
+
+É interessante medir o erro e o desempenho da rede ao longo das épocas no conjunto de treinamento e validação.
+
+```{r}
 plot(historico)
 ```
+
+Agora que sabemos que a rede aprendeu a reconhecer dígitos, podemos verificar seu desempenho no conjunto de teste. Para isso precisamos aplicar essas amostras nunca antes vistas na entrada da rede e obter os valores de saída: 
 
 ```{r}
 predicao <- predict(modelo, mnist$test$x)
 head(predicao)
 ```
 
+Cada neurônio de saída da rede irá retornar um valor. Aquele neurônio com maior valor deve indicar a classe com maior proababilidade:
+
 ```{r}
 predicao = apply(predicao, 1, which.max)
-predicao[1:100]
+predicao[1:6]
 ```
+
+Calculando o desempenho da rede no conjunto de teste:
 
 ```{r}
 matriz = table(mnist$test$y, predicao)
