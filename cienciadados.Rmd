@@ -9,6 +9,18 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
 
 O objetivo desse notebook é aplicar a Linguagem R em Ciência de Dados na resolução de problemas de forma não supervisionada e supervisionada. 
 
+## Agrupando dados
+
+Aplicando o KMeans com 2:10 centroides para a base Iris:
+
+```{r}
+par(mfrow=c(2,2))
+plot = sapply(c(2,3,5,7), function(i) {
+  centroides = kmeans(iris[,1:4], centers=i, iter.max=500, nstart=30, algorithm="MacQueen")
+  plot(iris[,3:4], col=centroides$cluster)  
+})
+```
+
 ## Comprimindo Imagens
 
 Um experimento interessante é a tarefa de comprimir imagens utilizando o algoritmo de agrupamento KMeans. Para a compressão, o número de cores precisa ser reduzido. A redução é feita através do agrupamento das cores e seleção daquelas mais frequentes. Para isso precisamos carregar a blbioteca imager:   
