@@ -124,11 +124,24 @@ cel2far(cel)
 
 ## Carregar bases de dados
 
-Os arquivos de texto são uma das formas mais comuns de armazenar dados. O formato de arquivo mais comum é o CSV mas diversos outros tipos e formatos de arquivos são aceitos. Dentre eles temos o xls e o arff. Primeiro vamos criar uma arquivo CSV:
+Os arquivos de texto são uma das formas mais comuns de armazenar dados. O formato de arquivo mais comum é o CSV mas diversos outros tipos e formatos de arquivos são aceitos. Dentre eles temos o xls e o arff. Primeiro vamos criar uma arquivo CSV utilizando cat:
+
+```{r}
+cat('ID;Nome;Nota\n434;Carlos;13.2\n523;Ana;15.1\n874;Susana;4.8\n', file="teste1.csv")
+```
+
+Podemos também utilizar o cat para realizar adição de linhas ao arquivo criado anteriormente com o parâmetro append.
+
+```{r}
+cat('103;Joaquim;15.9\n', file="teste1.csv", append = TRUE)
+```
+
+O R também permite lançar comandos de sistema, por exemplo, podemos criar o mesmo arquivo de texto com o comando printf do linux.
 
 ```{r}
 system(paste("printf 'ID;Nome;Nota\n434;Carlos;13.2\n523;Ana;15.1\n874;Susana;4.8\n103;Joaquim;15.9\n' > teste1.csv"))
 ```
+
 
 Agora podemos ler esse arquivo utilizando a função read.table. Sabemos que essa base de dados se chama teste1, utiliza como separador ';' e tem cabeçalho:
 
@@ -149,8 +162,12 @@ A base de dados que iremos utilizar é a base iris que também pode ser carregad
 ```{r}
 iris
 ```
+Mostrando apenas as primeiras linhas da base com o comando gead:
+```{r}
+head(iris)
+```
 
-Sumarizando informações da base de dados:
+Resumindo informações da base de dados:
 
 ```{r}
 summary(iris)
@@ -177,12 +194,13 @@ O boxplot de cada variável:
 boxplot(iris[,1:4])
 ```
 
-Podemos utilizar o PCA para alterar a representação dos dados originais:
+Podemos utilizar a análise das componentes principais (PCA) para alterar a representação dos dados originais:
 
 ```{r}
 pca = prcomp(iris[,1:4])
 summary(pca)
 ```
+Um bom tutorial sobre PCA pode ser encontrado neste [link](https://operdata.com.br/blog/analise-de-componentes-principais/)
 
 Variância acumulada das componentes principais:
 
@@ -207,7 +225,7 @@ if(!require('plot3D')){
 require('plot3D')
 ```
 
-O plot 3D de das três variáveis mais informativas da base Iris pode ser feita da seguinte forma:
+O plot 3D das três variáveis mais informativas da base Iris pode ser feita da seguinte forma:
 
 ```{r}
 par(mfrow=c(2,3))
