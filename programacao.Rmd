@@ -283,3 +283,30 @@ Representando a informação:
 plot(cars)
 lines(cbind(aux,predicao))
 ```
+
+Plot com barras de erros
+
+Primeiro vamos carregar a biblioteca ggplot2:
+
+```{r}
+library(ggplot2)
+```
+
+Vamos criar alguns dados para podermos trabalhar, considere esses dados como dados amostrais de um experimento qualquer e que o desvio padrão será utilizado como indice de dispersão dos dados já calculado.
+
+```{r}
+data <- data.frame(
+  name=letters[1:5],
+  value=sample(seq(4,15),5),
+  sd=c(1,0.2,3,2,4)
+)
+```
+Agora vamos realizar a apresentação dos dados
+
+```{r}
+ggplot(data) +
+    geom_bar( aes(x=name, y=value), stat="identity", fill="skyblue", alpha=0.7) +
+    geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4, colour="orange", alpha=0.9, size=1.3)
+```
+
+
