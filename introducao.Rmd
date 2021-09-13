@@ -9,6 +9,47 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
 
 O objetivo desse notebook é apresentar os principais conceitos e comandos da Linguagem R.  
 
+## Instalação
+
+O R é uma linguagem disponível para a diferentes Sistemas Operacionais (SOs). A instalação depende da plataforma. Mais informações podem ser obtidas na página do projeto:
+
+```{r}
+# https://r-project.org/
+```
+
+Existem alguns Ambientes Integral de Desenvolvimento (IDEs) que facilitam a vida dos desenvolvedores. Um deles é o R-Studio. Existe uma versão gratuita dessa ferramenta na página do projeto: 
+
+```{r}
+# https://www.rstudio.com/
+```
+
+Quando executamos o R, somente algumas funções estão disponı́veis de imediato. Essas são as funções incluídas nos pacotes carregados automaticamente. Podemos acessar a lista de bibliotecas oficiais disponíveis no link:
+
+```{r}
+# https://cran.fiocruz.br/web/packages/available_packages_by_name.html
+```
+
+Para instalar uma nova package podemos usar a função install.packages que tem como argumento o nome da biblioteca a ser instalada:
+
+```{r}
+install.packages('rpart')
+```
+
+Caso esteja interessado em uma tarefa específica, existe um visualizador de tópicos nesse link:
+
+```{r}
+# https://cran.fiocruz.br/web/views/
+```
+
+Outros pacotes não oficiais também podem ser instalados. Um exemplo é usando a biblioteca devtools para instalar pacotes disponíveis no GitHub:
+
+```{r}
+
+install.packages("devtools")
+devtools::install_github("rivolli/mfe")
+library("mfe")
+```
+
 ## Introdução
 
 Depois da instalação do R, o próximo passo é desvendar seus minstérios. Um exemplo de interação que vamos ter com R pode ser feito com o comando R.version no terminal:
@@ -31,12 +72,6 @@ O R tem um sistema de ajuda que lhe permitirá obter informações sobre a lingu
 ```{r}
 help(getwd)
 ?getwd
-```
-
-Quando executamos o R, somente algumas funções estão disponı́veis de imediato. Essas são as funções incluídas nos pacotes carregados automaticamente. Para instalar uma nova package podemos usar a função install.packages que tem como argumento o nome da package a ser instalada:
-
-```{r}
-#install.packages('rpart')
 ```
 
 ## Objetos
