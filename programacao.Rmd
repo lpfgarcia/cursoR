@@ -109,14 +109,6 @@ system.time(mclapply(1:100, mc.cores=4, function(i) {
 }))[3]
 ```
 
-## Definindo operatores binários
-
-## Argumentos nomeados
-
-## O Argumento ...
-
-## Escopo
-
 ## Definindo funções
 
 A criação de uma função consiste na atribuição do conteúdo de uma função a um nome. Os conteúdos são os argumentos e o corpo da função:
@@ -129,6 +121,12 @@ cel2far <- function(cel) {
 cel = c(32, 26, 21, 17.5, 35.6, 42.5)
 cel2far(cel)
 ```
+
+## Argumentos nomeados
+
+## O Argumento ...
+
+## Escopo
 
 ## Classes em R
 
@@ -151,7 +149,6 @@ O R também permite lançar comandos de sistema, por exemplo, podemos criar o me
 ```{r}
 system(paste("printf 'ID;Nome;Nota\n434;Carlos;13.2\n523;Ana;15.1\n874;Susana;4.8\n103;Joaquim;15.9\n' > teste1.csv"))
 ```
-
 
 Agora podemos ler esse arquivo utilizando a função read.table. Sabemos que essa base de dados se chama teste1, utiliza como separador ';' e tem cabeçalho:
 
