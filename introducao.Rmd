@@ -524,15 +524,15 @@ Saída
 Imprima a mensagem "X = " (letra X maiúscula) seguido pelo valor da variável X e pelo final de linha. Cuide para que tenha um espaço antes e depois do sinal de igualdade, conforme o exemplo abaixo.
 
 ```{r}
-input <- file('stdin', 'r')
+#input <- file('stdin', 'r')
 
-a <- as.integer(readLines(input, n=1))
-b <- as.integer(readLines(input, n=1))
+#a <- as.integer(readLines(input, n=1))
+#b <- as.integer(readLines(input, n=1))
 
-soma = a + b
+#soma = a + b
 
-# Write to stdout (must use '')
-write(paste("X =", soma), '')
+## Write to stdout (must use '')
+#write(paste("X =", soma), '')
 ```
 
 Exercício baseado no URI - Online Judge - 1002
@@ -551,14 +551,14 @@ Saída
 Apresentar a mensagem "A=" seguido pelo valor da variável area, conforme exemplo abaixo, com 4 casas após o ponto decimal. Utilize variáveis de dupla precisão (double). Como todos os problemas, não esqueça de imprimir o fim de linha após o resultado, caso contrário, você receberá "Presentation Error".
 
 ```{r}
-input <- file('stdin', 'r')
-pi = 3.14159
-raio <- as.double(readLines(input, n=1))
+#input <- file('stdin', 'r')
+#pi = 3.14159
+#raio <- as.double(readLines(input, n=1))
 
-area = raio^2*pi
-ar_str=formatC(area, format = "f", digits =4)
-# Write to stdout (must use '')
-write(paste("A=", ar_str, sep=''), '')
+#area = raio^2*pi
+#ar_str=formatC(area, format = "f", digits =4)
+## Write to stdout (must use '')
+#write(paste("A=", ar_str, sep=''), '')
 ```
 
 Exercício baseado no URI - Online Judge - 1010 
@@ -575,17 +575,17 @@ Saída
 A saída deverá ser uma mensagem conforme o exemplo fornecido abaixo, lembrando de deixar um espaço após os dois pontos e um espaço após o "R$". O valor deverá ser apresentado com 2 casas após o ponto.
 
 ```{r}
-cod1 <- scan(what = integer(), nlines=1)
-num1 <- scan(what = integer(), nlines=1)
-vun1 <- scan(what = integer(), nlines=1)
+#cod1 <- scan(what = integer(), nlines=1)
+#num1 <- scan(what = integer(), nlines=1)
+#vun1 <- scan(what = integer(), nlines=1)
 
-cod2 <- scan(what = integer(), nlines=1)
-num2 <- scan(what = integer(), nlines=1)
-vun2 <- scan(what = integer(), nlines=1)
+#cod2 <- scan(what = integer(), nlines=1)
+#num2 <- scan(what = integer(), nlines=1)
+#vun2 <- scan(what = integer(), nlines=1)
 
-valor=num1*vun1 + num2*vun2
-vstr=formatC(valor, format = "f", digits =2)
-write(paste("VALOR A PAGAR: R$", vstr) ,'')
+#valor=num1*vun1 + num2*vun2
+#vstr=formatC(valor, format = "f", digits =2)
+#write(paste("VALOR A PAGAR: R$", vstr) ,'')
 
 ```
 
@@ -607,22 +607,22 @@ Saída
 Imprima a saída conforme exemplo fornecido.
 
 ```{r}
-#install.packages("numbers", repo = "https://lib.ugent.be/CRAN/")
-require('numbers')
+##install.packages("numbers", repo = "https://lib.ugent.be/CRAN/")
+#require('numbers')
 
-#input <- file('stdin', 'r')
+##input <- file('stdin', 'r')
 
-#entrada <- as.integer(readLines(input, n=1))
-entrada <- scan(what=integer(), nlines = 1)
+##entrada <- as.integer(readLines(input, n=1))
+#entrada <- scan(what=integer(), nlines = 1)
 
-anos =as.integer(entrada/365)
-meses = as.integer(mod(entrada,365)/30)
-dias = as.integer(mod(mod(entrada,365),30)) 
-# ar_str=formatC(area, format = "f", digits =4)
-# Write to stdout (must use '')
-resultado = paste(anos, "ano(s)\n")
-resultado = paste(resultado, meses, " mes(es)\n", sep='')
-resultado = paste(resultado, dias, " dia(s)", sep='')
+#anos =as.integer(entrada/365)
+#meses = as.integer(mod(entrada,365)/30)
+#dias = as.integer(mod(mod(entrada,365),30)) 
+## ar_str=formatC(area, format = "f", digits =4)
+## Write to stdout (must use '')
+#resultado = paste(anos, "ano(s)\n")
+#resultado = paste(resultado, meses, " mes(es)\n", sep='')
+#resultado = paste(resultado, dias, " dia(s)", sep='')
 
-write(resultado, '')
+#write(resultado, '')
 ```
