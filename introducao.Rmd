@@ -9,6 +9,47 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
 
 O objetivo desse notebook é apresentar os principais conceitos e comandos da Linguagem R.  
 
+## Instalação
+
+O R é uma linguagem disponível para a diferentes Sistemas Operacionais (SOs). A instalação depende da plataforma. Mais informações podem ser obtidas na página do projeto:
+
+```{r}
+# https://r-project.org/
+```
+
+Existem alguns Ambientes Integral de Desenvolvimento (IDEs) que facilitam a vida dos desenvolvedores. Um deles é o R-Studio. Existe uma versão gratuita dessa ferramenta na página do projeto: 
+
+```{r}
+# https://www.rstudio.com/
+```
+
+Quando executamos o R, somente algumas funções estão disponı́veis de imediato. Essas são as funções incluídas nos pacotes carregados automaticamente. Podemos acessar a lista de bibliotecas oficiais disponíveis no link:
+
+```{r}
+# https://cran.fiocruz.br/web/packages/available_packages_by_name.html
+```
+
+Para instalar uma nova package podemos usar a função install.packages que tem como argumento o nome da biblioteca a ser instalada:
+
+```{r}
+install.packages('rpart')
+```
+
+Caso esteja interessado em uma tarefa específica, existe um visualizador de tópicos nesse link:
+
+```{r}
+# https://cran.fiocruz.br/web/views/
+```
+
+Outros pacotes não oficiais também podem ser instalados. Um exemplo é usando a biblioteca devtools para instalar pacotes disponíveis no GitHub:
+
+```{r}
+
+install.packages("devtools")
+devtools::install_github("rivolli/mfe")
+library("mfe")
+```
+
 ## Introdução
 
 Depois da instalação do R, o próximo passo é desvendar seus minstérios. Um exemplo de interação que vamos ter com R pode ser feito com o comando R.version no terminal:
@@ -22,6 +63,7 @@ O comando R.version mostra uma série de informações sobre a versão do R inst
 ```{r}
 getwd()
 setwd('~')
+print('')
 getwd()
 list.files()
 ```
@@ -57,14 +99,24 @@ Sempre que criamos um novo objeto, ele ficará armazenado na memória do computa
 ```{r}
 ls()
 rm(i)
+rm(e)
 ```
 
+Inclusive, podemos realizar instanciamento através da recepção de dados da linha de comando. Para isso, utilizaremos a função readline() ou scan():
+```{r}
+name <- readline(prompt="Seu nome: ")
+name
+inteiro1 <- as.integer(readline("Digite um inteiro:"))
+inteiro1
+inteiro2 = scan(what = integer(), nlines = 1)
+inteiro2
+```
 ## Vetores
 
 O objeto mais básico do R para guardar dados é o vetor. Um vetor é uma estrutura de dado que permite armazenar um conjunto de valores do mesmo tipo (por exemplo números) sob um mesmo nome.
 
 ```{r}
-a = c('Geraldo', 'Marcelo', 'Luis')
+a = c('Geraldo', 'Marcelo', 'Luis', 'Vinicius')
 a
 ```
 
@@ -73,13 +125,15 @@ Os vetores podem ser do tipo caracter, lógico, numérico e complexo:
 ```{r}
 a = c(1,2,3,4,5)
 b = c(TRUE, FALSE, T, F)
-d = c(1, NA, 3)
+d = c(1+2i, NA, 3)
+f = c("A", "B", NA)
 a
 b
 d
+f
 ```
 
-Os elementos do vetor pode ser acessados através de índices:
+Os elementos do vetor podem ser acessados através de índices:
 
 ```{r}
 lucros <- c(100, 50, 10, 70)
@@ -458,4 +512,123 @@ ncol(x)
 x %*% y
 # determinante 
 det(x)
+```
+
+Exercícios
+
+Exercício baseado no URI - Online Judge - 1001
+https://www.urionlinejudge.com.br/judge/pt/problems/view/1001
+
+Leia 2 valores inteiros e armazene-os nas variáveis A e B. Efetue a soma de A e B atribuindo o seu resultado na variável X. Imprima X conforme exemplo apresentado abaixo. Não apresente mensagem alguma além daquilo que está sendo especificado e não esqueça de imprimir o fim de linha após o resultado, caso contrário, você receberá "Presentation Error".
+
+Entrada
+
+A entrada contém 2 valores inteiros.
+
+Saída
+
+Imprima a mensagem "X = " (letra X maiúscula) seguido pelo valor da variável X e pelo final de linha. Cuide para que tenha um espaço antes e depois do sinal de igualdade, conforme o exemplo abaixo.
+
+```{r}
+input <- file('stdin', 'r')
+
+a <- as.integer(readLines(input, n=1))
+b <- as.integer(readLines(input, n=1))
+
+soma = a + b
+
+# Write to stdout (must use '')
+write(paste("X =", soma), '')
+```
+
+Exercício baseado no URI - Online Judge - 1002
+Área do Círculo
+
+A fórmula para calcular a área de uma circunferência é: area = π . raio2. Considerando para este problema que π = 3.14159:
+
+- Efetue o cálculo da área, elevando o valor de raio ao quadrado e multiplicando por π.
+
+Entrada
+
+A entrada contém um valor de ponto flutuante (dupla precisão), no caso, a variável raio.
+
+Saída
+
+Apresentar a mensagem "A=" seguido pelo valor da variável area, conforme exemplo abaixo, com 4 casas após o ponto decimal. Utilize variáveis de dupla precisão (double). Como todos os problemas, não esqueça de imprimir o fim de linha após o resultado, caso contrário, você receberá "Presentation Error".
+
+```{r}
+input <- file('stdin', 'r')
+pi = 3.14159
+raio <- as.double(readLines(input, n=1))
+
+area = raio^2*pi
+ar_str=formatC(area, format = "f", digits =4)
+# Write to stdout (must use '')
+write(paste("A=", ar_str, sep=''), '')
+```
+
+Exercício baseado no URI - Online Judge - 1010 
+https://www.urionlinejudge.com.br/judge/pt/problems/view/1010
+
+Neste problema, deve-se ler o código de uma peça 1, o número de peças 1, o valor unitário de cada peça 1, o código de uma peça 2, o número de peças 2 e o valor unitário de cada peça 2. Após, calcule e mostre o valor a ser pago.
+
+Entrada
+
+O arquivo de entrada contém duas linhas de dados. Em cada linha haverá 3 valores, respectivamente dois inteiros e um valor com 2 casas decimais.
+
+Saída
+
+A saída deverá ser uma mensagem conforme o exemplo fornecido abaixo, lembrando de deixar um espaço após os dois pontos e um espaço após o "R$". O valor deverá ser apresentado com 2 casas após o ponto.
+
+```{r}
+cod1 <- scan(what = integer(), nlines=1)
+num1 <- scan(what = integer(), nlines=1)
+vun1 <- scan(what = integer(), nlines=1)
+
+cod2 <- scan(what = integer(), nlines=1)
+num2 <- scan(what = integer(), nlines=1)
+vun2 <- scan(what = integer(), nlines=1)
+
+valor=num1*vun1 + num2*vun2
+vstr=formatC(valor, format = "f", digits =2)
+write(paste("VALOR A PAGAR: R$", vstr) ,'')
+
+```
+
+Exercício baseado no URI - Online Judge - 1020
+https://www.urionlinejudge.com.br/judge/pt/problems/view/1020
+
+Idade em Dias
+
+Leia um valor inteiro correspondente à idade de uma pessoa em dias e informe-a em anos, meses e dias
+
+Obs.: apenas para facilitar o cálculo, considere todo ano com 365 dias e todo mês com 30 dias. Nos casos de teste nunca haverá uma situação que permite 12 meses e alguns dias, como 360, 363 ou 364. Este é apenas um exercício com objetivo de testar raciocínio matemático simples.
+
+Entrada
+
+O arquivo de entrada contém um valor inteiro.
+
+Saída
+
+Imprima a saída conforme exemplo fornecido.
+
+```{r}
+#install.packages("numbers", repo = "https://lib.ugent.be/CRAN/")
+require('numbers')
+
+#input <- file('stdin', 'r')
+
+#entrada <- as.integer(readLines(input, n=1))
+entrada <- scan(what=integer(), nlines = 1)
+
+anos =as.integer(entrada/365)
+meses = as.integer(mod(entrada,365)/30)
+dias = as.integer(mod(mod(entrada,365),30)) 
+# ar_str=formatC(area, format = "f", digits =4)
+# Write to stdout (must use '')
+resultado = paste(anos, "ano(s)\n")
+resultado = paste(resultado, meses, " mes(es)\n", sep='')
+resultado = paste(resultado, dias, " dia(s)", sep='')
+
+write(resultado, '')
 ```
