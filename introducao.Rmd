@@ -75,12 +75,6 @@ help(getwd)
 ?getwd
 ```
 
-Quando executamos o R, somente algumas funções estão disponı́veis de imediato. Essas são as funções incluídas nos pacotes carregados automaticamente. Para instalar uma nova package podemos usar a função install.packages que tem como argumento o nome da package a ser instalada:
-
-```{r}
-#install.packages('rpart')
-```
-
 ## Objetos
 
 O R é uma linguagem OOP. Isto quer dizer que tudo está armazenado na memória do computador na forma de objetos. Para armazenar um objeto usamos os operadores de atribuição: 
