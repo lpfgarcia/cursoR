@@ -122,14 +122,6 @@ cel = c(32, 26, 21, 17.5, 35.6, 42.5)
 cel2far(cel)
 ```
 
-## Argumentos nomeados
-
-## O Argumento ...
-
-## Escopo
-
-## Classes em R
-
 ## Carregar bases de dados
 
 Os arquivos de texto são uma das formas mais comuns de armazenar dados. O formato de arquivo mais comum é o CSV mas diversos outros tipos e formatos de arquivos são aceitos. Dentre eles temos o xls e o arff. Primeiro vamos criar uma arquivo CSV utilizando cat:
