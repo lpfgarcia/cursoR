@@ -1,0 +1,301 @@
+---
+title: "2008 Loan Crisis - Monte Carlo method"
+author: "From Dario Abadie translated by Marcelo Marotta"
+date: "March 2021"
+output:
+    html_document:
+    fig_height: 6
+    fig_width: 10
+    highlight: kate
+    theme: flatly
+---
+# O que é o método de Monte Carlo?
+
+O termo “Método de Monte Carlo” surgiu no laboratório nacional de Los Alamos (EUA), no final dos anos 1940, durante o desenvolvimento de uma bomba atômica (Metropolis e Ulam, 1949). O termo “Monte Carlo” faz referência à cidade famosa por seus cassinos, que fazem uso de mecanismos “aleatórios” para jogos. O desenvolvimento destes métodos também contribuíram fortemente para o desenvolvimento dos primeiros computadores eletrônicos, acelarando a computação de tarefas numéricas repetitivas.
+
+Não existe um consenso em como os métodos de Monte Carlo poderiam ser definidos, mas algumas distinções podem ser feitas:
+
+Simulação: Sortear um valor de uma U(0,1) pode simular o lançamento de uma moeda: se for menor do que 0.5, atribua cara, caso contrário, coroa.
+
+Método de Monte Carlo: Derramar uma caixa de moedas em uma mesa e calcular a proporção de moedas que caem cara ou coroa.
+
+Simulação de Monte Carlo: Sortear um grande número de valores de uma U(0,1) e atribuir cara (menor que 0.5) ou coroa.
+
+## Os métodos de Monte Carlo também podem ser divididos em duas categorias:
+
+* Integração de Monte Carlo : quando utilizado para resolver problemas de integração numérica
+
+* Simulação de Monte Carlo : quando utilizado para resolver problemas mais gerais através de simulação
+
+
+# Introdução - Projeto de análise de empréstimos
+Neste projeto vamos analisar a crise de 2008 provocada pelos bancos e seus empréstimos. Começaremos com algumas suposições simples e gradualmente adicionaremos mais variáveis ao nosso modelo para obter conclusões interessantes sobre quanto dinheiro o banco perde e como evitá-lo usando a probabilidade e o método de Monte Carlo. 
+
+# Premissas
+* Loan (Empréstimos) = \$180.000
+* Default rate (taxa padrão) =  2% (Pessoas que não podem devolver o dinheiro ao banco) 
+* Default loss (perda padrão) = \$200.000 
+* Number of loans (número de empréstimos) : 10000
+
+* Esses números são figurativos para fins de aprendizagem 
+
+
+# Quanto dinheiro o banco perde devido à inadimplência?
+Primeiro, vamos calcular matematicamente a quantidade de dinheiro que o banco perde devido à inadimplência, supondo uma taxa de juros de ** 0% ** (O banco empresta dinheiro de graça!). Podemos calcular essa perda de dinheiro como $$ Loss = n_{loans} * default_{rate} *default_{loss} $$
+
+$$Loss = 10000 * 0.02 *200000$$
+
+$$Loss =40000000$$
+
+Parece bastante simples, certo? Agora vamos ver se podemos calcular esse resultado usando o método Monte Carlo. Embora possa parecer inútil realizar esta simulação para encontrar um resultado que obtivemos com uma equação simples, é necessário mostrar como esta técnica funciona (veremos como ela é útil nas próximas seções). Se não estiver familiarizado com este método, sugiro que você visite este [post] (https://towardsdatascience.com/the-house-always-wins-monte-carlo-simulation-eb82787da2a3). Basicamente, este método consiste em repetir várias vezes um processo cujo resultado é aleatório para definir quantitativamente a probabilidade de ocorrência de um evento.
+
+No código abaixo, usamos a função * sample() * para escolher aleatoriamente um elemento de uma matriz (neste caso * padrão * ou * não padrão *) de acordo com as probailidades previamente definidas. Isso representa o caso de uma pessoa que recebeu um empréstimo, que pode ou não devolver o dinheiro ao banco. O tamanho da matriz representa a quantidade de pessoas que receberam empréstimos. Assim que tivermos os resultados de todos os clientes (reembolsados ou não reembolsados) passamos a somar todas as perdas (lembre-se que neste exemplo o banco não cobra taxa de juros) e obtemos o lucro do banco para este cenário. Isso nos dá uma ideia de quanto dinheiro o banco perderia devido à inadimplência. Indo um passo à frente, o que acontece se recriarmos este cenário 1000 vezes e calcularmos o lucro médio? Obtemos uma ideia melhor e mais precisa de quanto perderia o dinheiro. Este é o Método de Monte Carlo. 
+
+```{R echo = F}
+# Define variables
+loan <- 180000
+default_rate <- 0.02
+default_loss <- -200000
+n_loans <- 10000
+
+# Monte Carlo method 
+B <- 1000 # Number of iterations 
+results <- replicate(B,{ 
+        temp <-sample(c(0,default_loss),n_loans,prob=c(1-default_rate, default_rate), replace = TRUE)
+        sum(temp)})
+
+#Comparisson between calculated result and Monte Carlo result
+print("Calculated result: ") 
+print(n_loans * default_rate * default_loss)
+print("Monte Carlo result: ")
+print(mean(results))
+
+```
+
+
+Muito semelhante, certo? Vamos visualizar o histograma dos resultados. 
+```{R echo = F}
+# Plot an histogram of the results 
+hist(results,breaks=100,xlab="Profit [$]", 
+   main="Histogram of profit")
+```
+
+Podemos avaliar como, em média, o banco perde cerca de 40 milhões com uma taxa de juros de 0%. Essa situação nos leva à próxima pergunta.
+
+# Qual é a taxa de juros que garante que o banco não perderá dinheiro?
+A próxima fórmula mostra a relação entre ganhos e perdas concedidos por empréstimos: 
+
+$$Gain * (1 - default_{rate}) - default_{loss} * default_{rate} = Profit $$
+
+Isso significa que os ganhos provenientes das pessoas que pagaram o empréstimo, mais juros, menos o valor perdido com a inadimplência, representam o lucro do banco. No entanto, como neste caso queremos apenas não perder dinheiro, o lucro deve ser igual a 0. 
+
+$$Gain * (1 - default_{rate}) - default_{loss} * default_{rate} = 0\$ $$
+
+Então
+
+$$ Gain= \frac{default_{loss} * default_{rate}}{ (1 - default_{rate})}$$
+
+Depois de calcularmos o ganho, a taxa de juros é obtida por: 
+
+$$I = \frac{Gain}{Loan}$$
+
+Vamos ver se podemos calcular isso usando o método Monte Carlo. 
+```{R echo = F}
+interest <- 0.0    # Start with a 0% interest
+
+result <- 0
+
+
+while (result <= 0){ # Each iteration increases the interest rate until the bank's profit is greater than0.
+    interest <- interest + 0.001 # Increase interest by 0.1% 
+    result <- mean(replicate(B,{ #Monte Carlo Method
+                        temp <- sample(c(180000*interest,default_loss), n_loans, prob = c(1-default_rate,default_rate), replace = TRUE)
+                        sum(temp)
+    }))
+}
+
+print("Computed interest:")
+print(interest)
+
+print("Calculated interest:")
+print(-(default_loss * default_rate / (1-default_rate))/loan)
+
+```
+
+Novamente, bastante semelhante! Podemos ver como o método de Monte Carlo é eficaz. Vamos visualizar o retorno do banco com uma taxa de juros de 2,3%. 
+```{R echo = F}
+# Plot histogram
+
+Sample <- replicate(B,{temp <- sample(c(180000*0.023,default_loss), n_loans, prob = c(1-default_rate,default_rate), replace = TRUE)
+                    sum(temp)
+    })
+mean(Sample <=0)
+hist(Sample,breaks=100,xlab="Profit [$]", 
+   main="Histogram of profit")
+```
+
+Podemos pensar que o banco está em uma situação muito segura dado que, em média, o lucro do banco é 0 (O banco não perdeu dinheiro). No entanto, há ** 50% de chance de o banco perder dinheiro **, então ainda há muito trabalho a ser feito. 
+
+# Qual é a taxa de juros que oferece uma chance de perda de dinheiro menor que 5%?
+
+
+Queremos que a probabilidade de perder dinheiro seja inferior a 5%. 
+
+$$P(S<0) <= 0.05$$
+
+Onde ** S ** é uma variável aleatória que representa o lucro do banco (ganho - perda) proveniente de 1000 empréstimos.
+
+Para continuar com nossos cálculos, é possível presumir que S é um ** normalmente distribuído **, de acordo com o teorema do Limite Central.
+
+Supondo que S seja normalmente distribuído, podemos usar ** Padronização **. A padronização de uma variável aleatória normalmente distribuída nos permite determinar com facilidade a probabilidade associada a uma faixa de valores usando uma tabela de distribuição padronizada (tabela Z). Uma variável aleatória normalmente distribuída pode ser padronizada usando esta fórmula: 
+$$z = \frac{x-\mu}{\sigma}$$
+onde $z$ representa a variável aleatória padronizada, $x$ é o valor que está sendo padronizado, $\mu$ a média da distribuição e $\sigma$ o desvio padrão da distribuição.
+
+A aplicação dessa técnica à nossa fórmula fica assim: 
+
+$$P(\frac{S-\mu}{\sigma}<\frac{0-\mu}{\sigma})$$
+então
+$$P(z <\frac{-\mu}{\sigma})$$
+
+Por um momento, definimos  $ -\mu/\sigma = a$.
+
+Quando trabalhamos com uma distribuição padronizada, a probabilidade de $z <a$ pode ser encontrada em uma ** Tabela Z **. Procuramos o valor ** "a" ** e o número associado a ** "a" ** é a probabilidade de z <a. De volta ao nosso exercício, sabemos que a probabilidade é 0,05, então precisamos encontrar nosso ** "a". ** De acordo com a tabela Z, o valor associado a esta probabilidade (0,05) é ** - 1,64 **. 
+
+Resumindo:
+
+$$a = -1.64$$
+
+e
+
+$$a = -\frac{-\mu}{\sigma}$$
+
+então 
+
+$$-1,64 = \frac{-\mu}{\sigma}$$
+
+Em nosso exemplo, a média e o desvio padrão da distribuição podem ser calculados da seguinte forma: 
+
+$$\mu = [default_{Loss} * default_{rate} + Gain * (1 - default_{rate})] * n$$
+
+$$\sigma = |Gain - default_{Loss}|  * \sqrt{n-default_{rate}*(1 - default_{rate})}$$ 
+
+onde $ n $ é o número de empréstimos. Substituindo na fórmula anterior, obtemos: 
+
+
+$$-1,64  = \frac{-[default_{Loss} * default_{rate} + Gain * (1 - default_{rate})] * n}{|Gain - default_{Loss}|  * \sqrt{n*default_{rate}*(1 - default_{rate})}}$$
+
+Então
+
+$$Gain = \frac {default_{Loss}* default_{rate} *n-(-1,64)*\sqrt{n*default_{rate} *(1-default_{rate} )}}{n*(1-default_{rate})+(-1,64)*\sqrt{n*default_{rate} *(1-default_{rate} )}}
+$$
+ 
+e finalmente
+ 
+$$ I = \frac {Gain}{Loan}$$
+ 
+Nós o calculamos na próxima parte do código: 
+
+
+```{R echo = F}
+# Gain formula
+gain <- - default_loss* (default_rate*n_loans-(-1.64)*sqrt(n_loans*default_rate*(1-default_rate)))/(n_loans*(1-default_rate)+(-1.64)*sqrt(n_loans*default_rate*(1-default_rate)))
+
+# Interest formula
+calculated_interest <- gain/loan
+
+print("Calculated interest:")
+print(calculated_interest)
+```
+
+Até o momento obtivemos uma taxa de juros de ** 0,025 **, o que garante que o banco tenha apenas 5% de chances de perder dinheiro. Agora vamos tentar obter essa taxa usando Monte Carlo. 
+
+```{R echo = F}
+interest <- 0.0    # Start with a 0% interest
+
+result <- 0
+flag <- 1
+while (flag == 1){
+    interest <- interest + 0.001 # Each interation increases interest by 0.1% until the result is greater than0.
+    result <- replicate(B,{
+                        temp <- sample(c(180000*interest,default_loss), n_loans, prob = c(1-default_rate,default_rate), replace = TRUE)
+                        sum(temp)
+    })
+    
+    if (mean(result <= 0)<=0.05){ flag <- 0} # Test if the scenarios where profit was < 0 represent the 5% of the total.
+}
+
+print("Computed interest: ")
+print(interest)
+```
+
+Os juros calculados são ** 0,026 **. Lembra dos juros calculados? Foi ** 0,0253 **, portanto podemos afirmar que os dois métodos forneceram, aproximadamente, o mesmo resultado. Para obter uma melhor aproximação, reduzimos o tamanho do passo na taxa de juros (passos de + 0,01% em vez de passos de 0,1%). Como consequência, a quantidade de iterações aumenta. 
+
+```{R echo = F}
+B <- 1000 # In this case Monthe Carlo method consists on 10000 iterations, instead of 1000 
+
+interest <- 0.0    # Start with a 0% interest
+
+result <- 0
+flag <- 1
+while (flag == 1){
+    interest <- interest + 0.0001 # Each interation increases interest by 0.1% until the result is greater than0.
+    result <- replicate(B,{
+                        temp <- sample(c(180000*interest,default_loss), n_loans, prob = c(1-default_rate,default_rate), replace = TRUE)
+                        sum(temp)
+    })
+    
+    if (mean(result <= 0)<=0.05){ flag <- 0} # Test if the scenarios where profit was < 0 represent the 5% of the total.
+}
+
+print("Computed interest: ")
+print(interest)
+```
+
+Agora ambos os resultados (Calculado e Computado) combinam perfeitamente! Este é um exemplo preciso da compensação entre ** precisão ** e uso de ** recursos do computador **.
+
+Vamos visualizar esses resultados. 
+```{R echo = F}
+Sample <- replicate(B,{temp <- sample(c(180000*interest,default_loss), n_loans, prob = c(1-default_rate,default_rate), replace = TRUE)
+                    sum(temp)
+    })
+hist(Sample,breaks=100,xlab="Profit [$]", 
+   main="Histogram of profit")
+```
+
+Os resultados parecem ser distribuídos normalmente. Vamos plotar a distribuição normal no mesmo gráfico para confirmar essa hipótese. 
+
+```{R echo = F}
+h<-hist(Sample, breaks=100, xlab="Profit [$]", 
+   main="Histogram of profit and normal distribution") 
+xfit<-seq(min(Sample),max(Sample),length=40) 
+yfit<-dnorm(xfit,mean=mean(Sample),sd=sd(Sample)) 
+yfit <- yfit*diff(h$mids[1:2])*length(Sample) 
+lines(xfit, yfit, col="blue", lwd=2)
+```
+Graficamente, vemos que os dois gráficos são semelhantes. Para provar que nosso lucro segue uma distribuição normal, devemos usar um ** qqplot ** que compara os quantis de nossa distribuição de lucro e os quantis da distribuição normal. Se observarmos que a curva segue uma linha reta, significa que há uma correlação clara entre as duas distribuições. 
+
+```{R echo = F}
+norm_sample <- qqnorm(Sample, xlab = "Normal distribution quantiles", ylab = "Profit distribution quantiles")
+```
+
+Dado que nossa distribuição de lucro parece normal, podemos calcular o quinto quantil, que deve ser próximo a 0. Isso significa que 5% de todos os resultados estão abaixo de 0 (O banco perde dinheiro apenas 5% de vezes). 
+
+```{R echo = F}
+print("5th Quantile: ")
+quantile5 <- pnorm(0.05,mean = mean(Sample), sd = sd(Sample))
+print(quantile5)
+```
+O quantil resultante é próximo a 0, o que significa que nossa hipótese estava correta. Vamos visualizar esse resultado no histograma. 
+
+```{R echo = F}
+ccat = cut(h$breaks, c(-Inf, quantile5, Inf))
+plot(h, col=c("red","green")[ccat],xlab="Profit [$]", 
+   main="Histogram of profit")
+```
+
+A área em vermelho representa 5% de todos os resultados. Podemos visualizar que o final desta área corresponde ao ponto ** $ 0 ** no eixo X. Isso significa que aqueles casos em que o banco perde dinheiro (Lucro <0), representam apenas 5% de todos os cenários.
+
+# Conclusões
+Neste exercício demonstramos o quão prático é o método de Monte Carlo quando precisamos encontrar a probabilidade de ocorrência de um evento, pois ele pode nos economizar muito tempo em cálculos. No entanto, é sempre importante aproveitar a probailidade para testar nossos resultados ou pelo menos estar atentos ao que estamos fazendo.
+
+Em relação ao banco e suas taxas de juros, observamos como uma variação mínima na taxa de juros pode afetar drasticamente os retornos do banco e o risco de perder dinheiro. Por outro lado, devemos levar em consideração que o banco não pode aumentar os juros muito altos porque os clientes iriam para outro banco. Essa situação leva ao questionamento ** O que o banco pode fazer para ganhar mais dinheiro e reduzir as chances de perdê-lo, sem aumentar a taxa de juros? ** A resposta é bastante simples: ** Reduza a taxa de inadimplência! **. Em 2008, se os bancos tivessem prestado mais atenção ao índice de inadimplência, a crise poderia ter sido evitada.
