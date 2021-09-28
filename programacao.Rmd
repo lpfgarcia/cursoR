@@ -172,5 +172,3 @@ Resumindo informações da base de dados:
 summary(iris)
 ```
 
-## Distribuição de probabilidades
-

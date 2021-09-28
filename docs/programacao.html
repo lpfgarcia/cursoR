@@ -196,7 +196,7 @@ if (x &gt; 5) {
 <p>Uma função relacionada com a instrução if é a função ifelse. Esta função permite trabalhar com vetores de condições booleanas:</p>
 <pre class="r"><code>x = rnorm(10)
 ifelse(x &gt; 0, &#39;+&#39;, &#39;-&#39;)</code></pre>
-<pre><code>##  [1] &quot;+&quot; &quot;-&quot; &quot;+&quot; &quot;-&quot; &quot;+&quot; &quot;+&quot; &quot;+&quot; &quot;+&quot; &quot;+&quot; &quot;-&quot;</code></pre>
+<pre><code>##  [1] &quot;-&quot; &quot;+&quot; &quot;-&quot; &quot;-&quot; &quot;-&quot; &quot;+&quot; &quot;+&quot; &quot;-&quot; &quot;+&quot; &quot;+&quot;</code></pre>
 </div>
 <div id="instruções-iterativas" class="section level2">
 <h2>Instruções Iterativas</h2>
@@ -240,19 +240,19 @@ apply(m, 1, sum)</code></pre>
   sum(aux)
 })</code></pre>
 <pre><code>## [[1]]
-## [1] -26.6918
+## [1] 3.8288
 ## 
 ## [[2]]
-## [1] -14.8695
+## [1] -15.2151
 ## 
 ## [[3]]
-## [1] 6.69
+## [1] 9.8559
 ## 
 ## [[4]]
-## [1] 30.5039
+## [1] 21.3921
 ## 
 ## [[5]]
-## [1] 18.9474</code></pre>
+## [1] -21.8443</code></pre>
 <pre class="r"><code>loja = list(&#39;l1&#39;, &#39;l2&#39;, &#39;l3&#39;)
 valor = list(1:10, 11:20, 21:30)
 
@@ -270,32 +270,32 @@ aux = mapply(function(val, loj) {
   sum(aux)
 })</code></pre>
 <pre><code>## [[1]]
-## [1] 7.3268
+## [1] 4.6115
 ## 
 ## [[2]]
-## [1] 7.1319
+## [1] -15.0697
 ## 
 ## [[3]]
-## [1] 32.711
+## [1] 6.0421
 ## 
 ## [[4]]
-## [1] -2.5889
+## [1] 10.1388
 ## 
 ## [[5]]
-## [1] -1.8941</code></pre>
+## [1] 1.2404</code></pre>
 <p>Podemos comparar o tempo de execução dessas intruções por meio da função system.time:</p>
 <pre class="r"><code>system.time(lapply(1:100, function(i) {
   aux = seq(-10, 10, by=0.00001)
   sum(aux)
 }))[3]</code></pre>
 <pre><code>## elapsed 
-##   1.234</code></pre>
+##   1.243</code></pre>
 <pre class="r"><code>system.time(mclapply(1:100, mc.cores=4, function(i) {
   aux = seq(-10, 10, by=0.00001)
   sum(aux)
 }))[3]</code></pre>
 <pre><code>## elapsed 
-##   0.523</code></pre>
+##   0.529</code></pre>
 </div>
 <div id="definindo-funções" class="section level2">
 <h2>Definindo funções</h2>
@@ -357,9 +357,6 @@ data = read.table(&#39;teste2.csv&#39;, sep= &#39;,&#39;, header=F)</code></pre>
 ##                 
 ##                 
 ## </code></pre>
-</div>
-<div id="distribuição-de-probabilidades" class="section level2">
-<h2>Distribuição de probabilidades</h2>
 </div>
 
 
