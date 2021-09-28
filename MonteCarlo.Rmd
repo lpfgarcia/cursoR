@@ -1,14 +1,13 @@
 ---
 title: "2008 Loan Crisis - Monte Carlo method"
 author: "From Dario Abadie translated by Marcelo Marotta"
-date: "March 2021"
 output:
-    html_document:
-    fig_height: 6
-    fig_width: 10
-    highlight: kate
-    theme: flatly
+  html_document:
+    df_print: paged
+knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(input_file,
+  encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'montecarlo.html'))})
 ---
+
 # O que é o método de Monte Carlo?
 
 O termo “Método de Monte Carlo” surgiu no laboratório nacional de Los Alamos (EUA), no final dos anos 1940, durante o desenvolvimento de uma bomba atômica (Metropolis e Ulam, 1949). O termo “Monte Carlo” faz referência à cidade famosa por seus cassinos, que fazem uso de mecanismos “aleatórios” para jogos. O desenvolvimento destes métodos também contribuíram fortemente para o desenvolvimento dos primeiros computadores eletrônicos, acelarando a computação de tarefas numéricas repetitivas.
