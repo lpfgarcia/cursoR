@@ -8,7 +8,7 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
 runtime: shiny
 ---
 
-# Visualização de Dados
+O objetivo desse notebook é apresentar os principais conceitos de visualização em R.  
 
 ## Referências
 
