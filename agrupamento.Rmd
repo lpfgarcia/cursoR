@@ -9,7 +9,7 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
 
 O objetivo desse notebook é aplicar a Linguagem R em Ciência de Dados na resolução de problemas de forma não supervisionada. 
 
-## KMeans 
+## Base USArrests
 
 A base de dados USArrests contém estatísticas por 100.000 habitantes de prisões por agressão, assassinato e estupro em cada um dos 50 estados dos Estados Unidos em 1973.
 
@@ -46,9 +46,20 @@ Aqui vamos usar a normalização pela média e desvio padrão.
 ```{r}
 usa = scale(usa)
 head(usa)
+summary(usa)
 ```
 
-Agora nossos dados estão prontos. Vamos aplicar a função de agrupamento KMeans para 2 grupos.
+## kMeans
+
+O algoritmo de agrupamento kMeans é um método de quantização vetorial, originário do processamento de sinais, que visa particionar n observações em k clusters em que cada observação pertence ao cluster com a média mais próxima (centros de cluster ou centróide de cluster), servindo como um protótipo de cluster. Isso resulta em um particionamento do espaço de dados.
+
+![Execução do kMean (Adaptado da Wikepedia)](figures/wiki.gif)
+
+O algoritmo kMeans clássico pode ser definido como a soma dos mínimos locais gerados pelos agrupamentos definido como:
+
+![Formulação matemática do kMeans](figures/formula.png)
+
+Agora nossos dados estão prontos. Vamos aplicar a função de agrupamento kMeans para 2 grupos.
 
 ```{r}
 cls = kmeans(usa, centers=2)
@@ -122,9 +133,9 @@ plot = lapply(2:5, function(k) {
 do.call("grid.arrange", plot)
 ```
 
-## Comprimindo Áudio com KMeans
+## Comprimindo Áudio com kMeans
 
-Um experimento interessante é a tarefa de comprimir áudio utilizando o algoritmo de agrupamento KMeans. Para isso vamos precisar das bibliotecas audio e seewave.
+Um experimento interessante é a tarefa de comprimir áudio utilizando o algoritmo de agrupamento kMeans. Para isso vamos precisar das bibliotecas audio e seewave.
 
 ```{r}
 require('audio')
@@ -172,7 +183,7 @@ Verificando quantos valores únicos temos nessa amostra.
 length(unique(as.numeric(sound)))
 ```
 
-Para aplicar o KMeans, precisamos transformar esses dados.
+Para aplicar o kMeans, precisamos transformar esses dados.
 
 ```{r}
 wave = data.frame(amp=as.numeric(sound))
@@ -180,7 +191,7 @@ summary(wave)
 head(wave)
 ```
 
-Agora podemos aplicar o KMeans. Vamos tentar agrupar os sinais de amplitude da música de 10 até 100 grupos.
+Agora podemos aplicar o kMeans. Vamos tentar agrupar os sinais de amplitude da música de 10 até 100 grupos.
 
 ```{r}
 require('parallel')
@@ -198,7 +209,7 @@ cmp = cls[[1]]$centers[cls[[1]]$cluster]
 plot(cmp, type = "l")
 ```
 
-Agora, podemos salvar alguns desses resultados do KMeans para compressão de música para diferentes valores de k e testar.
+Agora, podemos salvar alguns desses resultados do kMeans para compressão de música para diferentes valores de k e testar.
 
 ```{r}
 cmp = cls[[1]]$centers[cls[[1]]$cluster]
@@ -228,9 +239,9 @@ novoSom = audioSample(cmp)
 savewav(novoSom, filename='cmpk100.wav')
 ```
 
-## Comprimindo Imagens com KMeans
+## Comprimindo Imagens com kMeans
 
-Um experimento interessante é a tarefa de comprimir imagens utilizando o algoritmo de agrupamento KMeans. Para a compressão, o número de cores precisa ser reduzido. A redução é feita através do agrupamento das cores e seleção daquelas mais frequentes. Para isso precisamos carregar a blbioteca imager:   
+Um experimento interessante é a tarefa de comprimir imagens utilizando o algoritmo de agrupamento kMeans. Para a compressão, o número de cores precisa ser reduzido. A redução é feita através do agrupamento das cores e seleção daquelas mais frequentes. Para isso precisamos carregar a blbioteca imager:   
 
 ```{r}
 require('imager')
@@ -299,7 +310,7 @@ Reconstruindo a base de dados em um data.frame:
 data = data.frame(red, blue, green)
 ```
 
-Aplicando o KMeans com 10 centroides e 500 iterações máximas:
+Aplicando o kMeans com 10 centroides e 500 iterações máximas:
 
 ```{r}
 centroides = kmeans(data, centers=10)
