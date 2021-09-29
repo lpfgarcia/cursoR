@@ -5,141 +5,376 @@ output:
     df_print: paged
 knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(input_file,
   encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'visualizacao.html'))})
+runtime: shiny
 ---
 
+# Visualização de Dados
 
-## Visualizar bases de dados
+## Referências
 
-Podemos fazer um scaterplot dessa base de dados:
+- Livro de Claus Wilke, Fundamentals of Data Visualization (versão online compacta): https://clauswilke.com/dataviz/;
+- Documentação da biblioteca Plotly para Linguagem R: https://plotly.com/r/
+- AutoMPG Dataset: https://archive.ics.uci.edu/ml/datasets/auto+mpg
 
-```{r}
-plot(iris[,1:4], col=iris$Species)
-```
+## Datasets
 
-O histograma de cada variável:
-
-```{r}
-par(mfrow=c(2,2))
-plot = apply(iris[,1:4], 2, hist)
-```
-
-O boxplot de cada variável:
+Obtém informações do conjunto de dados AutoMPG Dataset
 
 ```{r}
-boxplot(iris[,1:4])
+library(plotly)
+library(datasets)
 ```
-
-Podemos utilizar a análise das componentes principais (PCA) para alterar a representação dos dados originais:
 
 ```{r}
-pca = prcomp(iris[,1:4])
-summary(pca)
+nrow(mpg)
+ncol(mpg)
 ```
-Um bom tutorial sobre PCA pode ser encontrado neste [link](https://operdata.com.br/blog/analise-de-componentes-principais/)
+
+## Gráfico de Linhas
+
+```{r}
+library(plotly)
+
+trace_0 = rnorm(100, mean = 5)
+trace_1 = rnorm(100, mean = 0)
+trace_2 = rnorm(100, mean = -5)
+x = c(1:100)
+
+data = data.frame(x, trace_0, trace_1, trace_2)
+
+fig = plot_ly(data, x = ~x)
+fig = fig %>% add_trace(y = ~trace_0, name = 'Padrão 1',mode = 'lines')
+fig = fig %>% add_trace(y = ~trace_1, name = 'Padrão 2', mode = 'lines+markers')
+fig = fig %>% add_trace(y = ~trace_2, name = 'Padrão 3', mode = 'markers')
+
+fig
+```
+
+## Gráfico de Barras
+
+Segue um gráfico de barras para o conjunto AutoMPG Dataset:
+
+```{r}
+fig = plot_ly(data = mpg, x = ~model, y = ~year, type = 'bar')
+
+fig
+```
+
+Filtrando instancias
+
+```{r}
+str(mpg)
+```
+Contando os valores do atributo "manufacturer" e pegando esses valores:
+
+```{r}
+counts = table(mpg$manufacturer)
+
+values = unique(mpg$manufacturer)
+```
+
+Nosso primeiro histograma:
+
+```{r}
+fig = plot_ly(x = values, y = counts, type = 'bar',name=values)
+fig = fig %>% layout(xaxis = list(title = 'Modelo'), yaxis = list(title = 'Ano'))
+fig
+```
+
+Podemos testar também o gráfico de barras empilhado:
+
+```{r}
+
+counts = table(mpg$manufacturer)
+
+fig = plot_ly(data = mpg, x = ~model, y = ~year, type = 'bar')
+#fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+
+fig
+```
+
+Vamos comparar agora apenas os carros das fabricantes Toyota e Volkswagen
+
+```{r}
+toyota = mpg[mpg$manufacturer == 'toyota',]
+volks = mpg[mpg$manufacturer == 'volkswagen',]
+```
+
+Como fica a Toyota:
+
+```{r}
+toyota
+```
+
+Como fica Volkswagen:
+
+```{r}
+volks
+```
+
+
+## Gráfico de Pizza
+
+```{r}
+
+fig = plot_ly(data = volks, labels = volks$year, x=volks$year, type = 'pie')
+
+fig
+```
+
+## Gráfico de Pizza
+
+```{r}
+
+fig = plot_ly(data = toyota, labels = toyota$class, x= toyota$class, type = 'pie')
+
+fig
+```
+
+## Box Plot
+
+```{r}
+fig = plot_ly(y=volks$displ, type = "box", name="Prices Volkswagen")
+fig = fig %>% add_trace(y=toyota$displ, name="Prices Toyota")
+
+
+fig
+```
+
+```{r}
+summary(volks$displ)
+```
+
+```{r}
+fig = plot_ly(y=volks$displ, type = "box", boxpoints = "all", name="Prices Volkswagen")
+fig = fig %>% add_trace(y=toyota$displ, name="Prices Toyota")
+
+
+fig
+```
+
+## Mapas
+
+```{r}
+df = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv")
+
+#df
+```
+
+```{r}
+#table(df)
+```
+
+Plota o mapa com as informações solicitadas
+
+```{r}
+fig = plot_ly(df, type='choropleth', locations=df$CODE, z=df$GDP..BILLIONS., text=df$COUNTRY, colorscale="Blues")
+
+fig
+```
+
+
+## Gráfico de Dispersão
+
+```{r}
+fig = plot_ly(data = iris, x = ~Sepal.Length, y = ~Petal.Length)
+
+fig
+```
+
+```{r}
+library(plotly)
+
+pal = c("red", "blue", "green")
+pal = setNames(pal, c("virginica", "setosa", "versicolor"))
+
+fig = plot_ly(data = iris, x = ~Sepal.Length, y = ~Petal.Length, color = ~Species, colors = pal)
+
+fig
+```
+
+
+```{r}
+
+pal = c("red", "blue", "green")
+pal = setNames(pal, c("virginica", "setosa", "versicolor"))
+
+fig = plot_ly(data = iris, x = ~Sepal.Length, y = ~Petal.Length, color = ~Species, colors = pal,
+              marker = list(size = 8,
+                            line = list(color="black",width = 1)))
+
+fig
+```
+
+```{r}
+
+pal = c("red", "blue", "green")
+pal = setNames(pal, c("virginica", "setosa", "versicolor"))
+
+fig = plot_ly(data = iris, x = ~Sepal.Length, y = ~Petal.Length, color = I('black'),
+              mode = 'markers', symbol = ~Species, symbols = c('circle','x','o'))
+
+fig
+```
+
+## Matrizes de gráficos de dispersão
+
+```{r}
+
+axis = list(showline=FALSE,
+            zeroline=FALSE,
+            gridcolor='#ffff',
+            ticklen=4,
+            titlefont=list(size=13))
+
+fig <- iris %>%
+  plot_ly()
+fig <- fig %>%
+  add_trace(
+    type = 'splom',
+    dimensions = list(
+      list(label='sepal length', values=~Sepal.Length),
+      list(label='sepal width', values=~Sepal.Width),
+      list(label='petal length', values=~Petal.Length),
+      list(label='petal width', values=~Petal.Width)
+    ),
+    color = ~Species, colors = c('#636EFA','#EF553B','#00CC96') ,
+    marker = list(size = 8,line = list(color="black",width = 1)
+    )
+  )
+fig <-  fig %>% style(diagonal = list(visible = FALSE))
+fig <- fig %>%
+  layout(
+    hovermode='closest',
+    dragmode= 'select',
+    plot_bgcolor='rgba(240,240,240, 0.95)',
+    xaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    yaxis=list(domain=NULL, showline=F, zeroline=F, gridcolor='#ffff', ticklen=4),
+    xaxis2=axis,
+    xaxis3=axis,
+    xaxis4=axis,
+    yaxis2=axis,
+    yaxis3=axis,
+    yaxis4=axis
+  )
+
+fig
+```
+
+## Mapa de Calor (Heatmap)
+
+```{r}
+fig <- plot_ly(z = volcano, type = "heatmap")
+
+fig
+```
+
+
+
+```{r}
+
+dados = iris[,1:4]
+
+#dados.scaled = scale(dados, center = T, scale = T)
+
+corrIris = cor(dados)
+
+corrIris
+```
+
+
+```{r}
+dimensions = list('sepal length','sepal width','petal length','petal width')
+
+fig = plot_ly(x=dimensions,y=dimensions,z=corrIris, type = "heatmap",colors = "Greys")
+
+fig
+```
+## Visualização baseada no posicionamento de pontos
+
+Podemos empregar uma técnica de redução de dimensionalidade para transformar os dados originais definidos em um espaço de alta dimensão para um espaço de dimensão baixa. Para propósitos de visualização, a baixa dimensão é igual a $2$.
+
+Vamos apresentar duas técnicas de redução de dimensionalidade: Análise de Componentes Principais (Principal Component Analysis - PCA) e t-Distributed Stochastic Neighborhood Embedding (t-SNE).
+
+### Análise de Componentes Principais (Principal Component Analysis - PCA)
+
+Um bom tutorial sobre PCA pode ser encontrado neste [link](https://operdata.com.br/blog/analise-de-componentes-principais/).
 
 Variância acumulada das componentes principais:
 
 ```{r}
-round(cumsum(pca$sdev)/sum(pca$sdev), 2)
+library(plotly)
+library(stats)
+
+X = subset(iris, select = -c(Species))
+
+prin_comp = prcomp(X, rank. = 2)
+
+summary(prin_comp)
+
 ```
 
-Modificando a base de dados:
+A proporção de variância concentrada pelas primeiras *k* compenentes principais é dada por:
 
 ```{r}
-data = data.frame(pca$x, Species=iris$Species)
-plot(data[,1:2], col=data$Species)
+explained_variance_ratio <- summary(prin_comp)[["importance"]]['Proportion of Variance',]
+cumsum <- cumsum(explained_variance_ratio)
+data <- data.frame(cumsum,seq(1, length(cumsum), 1))
+colnames(data) <- c('Explained_Variance','Components')
+
+fig = plot_ly(data = data, x = ~Components, y = ~Explained_Variance, type = 'scatter', mode = 'lines', fill = 'tozeroy') %>%
+  layout(
+    xaxis = list(
+      title = "# Componentes", tickvals = seq(1, length(cumsum), 1)),
+    yaxis = list(
+      title = "Variância Concentrada"))
+fig
 ```
 
-Outra forma de representar os dados é utilizar um gráfico 3D. Existem diversas bibliotecas para isso. Uma delas é a biblioteca plot3D. 
+
+Visualizando o conjunto de dados Iris
 
 ```{r}
-if(!require('plot3D')){
-  install.packages("plot3D")
-}
 
-require('plot3D')
+components = prin_comp[["x"]]
+components = data.frame(components)
+components = cbind(components, iris$Species)
+
+
+fig = plot_ly(components, x = ~PC1, y = ~PC2, color = ~iris$Species, colors = c('#636EFA','#EF553B','#00CC96'),
+               type = 'scatter',
+               text = ~iris$Species,
+               textposition = "auto",
+               hoverinfo = 'text',
+               #hovertemplate = paste('<i>PC1</i>: %{y:.2f}',
+              #          '<br><b>PC2</b>: %{x}<br>',
+              #          '<b>%{text}</b>'),
+               marker = list(size = 8,line = list(color="black",width = 1)))
+
+
+fig
 ```
 
-O plot 3D das três variáveis mais informativas da base Iris pode ser feita da seguinte forma:
+
+
+
 
 ```{r}
-par(mfrow=c(2,3))
-scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=30, phi=0)
-scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=60, phi=30)
-scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=90, phi=60)
-scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=120, phi=90)
-scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=150, phi=120)
-scatter3D(x=data[,1], y=data[,2], z=data[,3], colvar=as.integer(data$Species), colkey=FALSE, theta=180, phi=150)
-```
-
-## Fórmulas
-
-A fórmula é uma maneira de representar a informação em R que relaciona uma variável com outras. Segue exemplos de seu uso:
-
-```{r}
-formula('Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width')
-formula('Species ~ Sepal.Length - Sepal.Width + Petal.Length + Petal.Width')
-formula('Species ~ .')
-```
-
-Podemos usar fórmulas para analisar o comportamento das varíaveis por classe como nos boxplots:
-
-```{r}
-par(mfrow=c(2,2))
-boxplot(Sepal.Length ~ Species, iris)
-boxplot(Sepal.Width ~ Species, iris)
-boxplot(Petal.Length ~ Species, iris)
-boxplot(Petal.Width ~ Species, iris)
-```
-
-Vamos utilizar a base de dados cars. Ela registra informações referentes a distância de frenagem e sua velocidade para carros de diferentes marcas. Os dados da base são de carros de 1920.
-
-```{r}
-cars
-plot(cars)
-```
-
-Também podemos usar fórmulas para obter modelos. A seguir usamos a função lm para induzir um modelos de regressão linear que relaciona a variável 'dist' com a variável 'speed' usando os dados do conjunto de dados cars:
-
-```{r}
-modelo = lm(dist ~ speed, data=cars)
-```
-
-Podemos gerar alguns dados para testar o modelo de regressão linear. Para isso vamos gerar diversos valores de velocidade e realizar a predição:
-
-```{r}
-aux = data.frame(speed=seq(0, 30, by=0.1))
-predicao = predict(modelo, aux)
-```
-
-Representando a informação:
-
-```{r}
-plot(cars)
-lines(cbind(aux,predicao))
-```
-
-Plot com barras de erros
-
-Primeiro vamos carregar a biblioteca ggplot2:
-
-```{r}
-library(ggplot2)
-```
-
-Vamos criar alguns dados para podermos trabalhar, considere esses dados como dados amostrais de um experimento qualquer e que o desvio padrão será utilizado como indice de dispersão dos dados já calculado.
-
-```{r}
-data <- data.frame(
-  name=letters[1:5],
-  value=sample(seq(4,15),5),
-  sd=c(1,0.2,3,2,4)
-)
+#install.packages("tsne")
 ```
 Agora vamos realizar a apresentação dos dados
 
 ```{r}
-ggplot(data) +
-    geom_bar( aes(x=name, y=value), stat="identity", fill="skyblue", alpha=0.7) +
-    geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4, colour="orange", alpha=0.9, size=1.3)
+library(tsne)
+
+features = subset(iris, select = -c(Species)) 
+
+set.seed(0)
+tsne = tsne(features, initial_dims = 2,perplexity=32)
+tsne = data.frame(tsne)
+pdb = cbind(tsne,iris$Species)   # juntando vetores por meio das colunas
+fig =  plot_ly(data = pdb ,x =  ~X1, y = ~X2, type = 'scatter', marker = list(size = 8,line = list(color="black",width = 1)), split = ~iris$Species)
+
+fig
 ```
+
