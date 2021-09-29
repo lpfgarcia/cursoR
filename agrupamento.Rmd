@@ -1,5 +1,5 @@
 ---
-title: "Ciência de Dados I"
+title: "Agrupamento de Dados"
 output:
   html_document:
     df_print: paged
@@ -9,7 +9,7 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
 
 O objetivo desse notebook é aplicar a Linguagem R em Ciência de Dados na resolução de problemas de forma não supervisionada. 
 
-## Agrupando dados
+## KMeans 
 
 A base de dados USArrests contém estatísticas por 100.000 habitantes de prisões por agressão, assassinato e estupro em cada um dos 50 estados dos Estados Unidos em 1973.
 
@@ -122,7 +122,7 @@ plot = lapply(2:5, function(k) {
 do.call("grid.arrange", plot)
 ```
 
-## Comprimindo Áudio
+## Comprimindo Áudio com KMeans
 
 Um experimento interessante é a tarefa de comprimir áudio utilizando o algoritmo de agrupamento KMeans. Para isso vamos precisar das bibliotecas audio e seewave.
 
@@ -228,7 +228,7 @@ novoSom = audioSample(cmp)
 savewav(novoSom, filename='cmpk100.wav')
 ```
 
-## Comprimindo Imagens
+## Comprimindo Imagens com KMeans
 
 Um experimento interessante é a tarefa de comprimir imagens utilizando o algoritmo de agrupamento KMeans. Para a compressão, o número de cores precisa ser reduzido. A redução é feita através do agrupamento das cores e seleção daquelas mais frequentes. Para isso precisamos carregar a blbioteca imager:   
 
