@@ -90,13 +90,13 @@ Podemos mostrar graficamente o valor da silhueta por amostra.
 plot(sil)
 ```
 
-Ou usar a média para avaliar se o valor é bom.
+Ou usar a média para avaliar se o agrupamento realizado pelo kMeans é bom.
 
 ```{r}
 mean(sil[,3])
 ```
 
-Podemos variar o número de grupos para tentar encontrar o valor ótimo de grupos baseado na medida silhueta.
+Podemos tentar encontrar o valor ótimo de grupos baseado na medida silhueta.
  
 ```{r}
 cls = sapply(2:10, function(k) {
@@ -107,12 +107,13 @@ cls = sapply(2:10, function(k) {
 ```
 
 Podemos plotar os valores da silhueta.
+
 ```{r}
 names(cls) = 2:10
 plot(names(cls), cls, type = "l")
 ```
 
-Usando a biblioteca plotly.
+Também usando a biblioteca plotly.
 
 ```{r}
 require(plotly)
@@ -146,7 +147,7 @@ require('audio')
 require('seewave')
 ```
 
-Vamos baixar uma música da internet com permissão de reprodução pelo pixabay. Essa música tem o formato MP3.
+Vamos baixar uma música da internet com permissão de reprodução pelo pixabay (https://pixabay.com/music/). Essa música tem o formato MP3.
 
 ```{r}
 url = 'https://cdn.pixabay.com/download/audio/2021/04/07/audio_0bed53371b.mp3?filename=blues-vibes-100-bpm-michael-kobrin-3780.mp3'
