@@ -1,29 +1,175 @@
 ---
-title: "Ciência de Dados II"
+title: "Aprendizado Supervisionado"
 output:
   html_document:
     df_print: paged
 knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(input_file,
-  # encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'supervisionado.html'))})
+  encoding=encoding, output_file=file.path(dirname(input_file), out_dir, 'supervisionado.html'))})
 ---
+
+O objetivo desse notebook é aplicar a Linguagem R em Ciência de Dados na resolução de problemas de classificação. 
+
+## Classificando flores
+
+A base de dados iris fornece medidas em centímetros das variáveis largura e comprimento da sépala e largura e comprimento da pétala, respectivamente, para 50 flores, de cada uma das 3 espécies de íris.
+      
+
+```{r}
+data('iris')
+```
+
+Podemos usar o scatterplot para entender o comportamento das classes 
+
+```{r}
+plot(iris[,1:4], col=iris$Species)
+```
+
+Devemos normalizar, uma vez que podemos utilizar algoritmos de classificação que são suscetíveis aos valores dos atributos.
+
+```{r}
+iris = data.frame(scale(iris[,1:4]), Species=iris$Species)
+summary(iris)
+```
+
+Depois de carregar a base. Precisamos particionar o conjunto de treinamento e teste. Para essa e outras bases vamos usar o holdout com 70% para treinamento e 30% para teste.
+
+```{r}
+set.seed(123)
+idx = sample(nrow(iris), 0.7*nrow(iris), replace=FALSE)
+tran = iris[idx,]
+test = iris[-idx,]
+```
+
+Podemos conferir se ocorreu contaminação.
+
+```{r}
+intersect(rownames(tran), rownames(test))
+```
+
+Agora podemos induzir alguns modelos de Aprendizado de Máquina. Vamos começar pela Árvore de Decisão.
+
+```{r}
+require('rpart')
+model = rpart(Species~., iris)
+```
+
+No caso da Árvore de Decisão, é possível plotar o modelo. Para isso vamos usar a biblioteca rattle. 
+
+```{r}
+library('rattle')
+fancyRpartPlot(model, caption=NULL)
+```
+
+Também podemos predizer a classe das amostras de teste.
+
+```{r}
+pred = predict(model, test, type='class')
+```
+
+E plotar o scatterplot para os dados de treinamento e teste.
+
+```{r}
+par(mfrow=c(1,2))
+plot(tran[,3:4], col=tran$Species, pch=as.numeric(tran$Species))
+plot(test[,3:4], col=pred, pch=as.numeric(pred))
+```
+
+Podemos avaliar de forma mais objetiva o desempenho do modelo.
+
+```{r}
+conf = table(test$Species, pred)
+print(conf)
+```
+
+Inclusive, calcular a taxa de acerto.
+
+```{r}
+acc = sum(diag(conf))/sum(conf)
+print(acc)
+```
+
+Existem outras medidas de avaliação. Recomendo olhar os pacotes 'caret' e 'mlr'.
+
+Agora podemos induzir outros modelos de Aprendizado de Máquina. Para isso precisamos carregar algumas bibliotecas.
+
+```{r}
+require('kknn')
+require('e1071')
+require('randomForest')
+```
+
+Gerando os modelos de Aprendizado de Máquina.
+
+```{r}
+model1 = kknn(Species~., tran, test, k=3)
+model2 = svm(Species~., tran, kernel="radial")
+model3 = randomForest(Species~., tran)
+```
+
+Calculando a predição.
+
+```{r}
+pred1 = model1$fitted.values
+pred2 = predict(model2, test, type='class')
+pred3 = predict(model3, test)
+```
+
+Calculando o desempenho baseado na acurácia.
+
+```{r}
+acuracia <- function(orig, pred) {
+  acc = table(orig, pred)
+  sum(diag(acc))/sum(acc)  
+} 
+
+cat('A acurácia do 3NN é', acuracia(test$Species, pred1))
+cat('A acurácia do SVM é', acuracia(test$Species, pred2))
+cat('A acurácia do RF é', acuracia(test$Species, pred3))
+```
+
+No entanto, o holdout não é a melhor alternativa. A validação cruzada estratificada é mais interessante. Podemos ver na imagem um exemplo de seu funcionamento.
+
+![k-fold cross validation (Adaptado da Wikepedia)](figures/kfold.png)
+
+Podemos implementar :)
+
+```{r}
+kfolds <- function(y, folds) {
+
+  names(y) =  1:length(y)
+  index = lapply(1:nlevels(y), function(i) {
+    rep(1:folds, length.out=length(y[y == levels(y)[i]]))
+  })
+
+  index = unlist(index)
+  folds = lapply(1:folds, function(i) {
+    as.numeric(names(y[index == i]))
+  })
+
+  return(folds)
+}
+```
+
+E agora podemos usar.
+
+```{r}
+idx = kfolds(iris$Species, 10)
+
+acc = lapply(idx, function(i){
+  model = randomForest(Species~., iris[-i,])
+  pred = predict(model3, iris[i,])
+  acuracia(iris[i,]$Species, pred)
+})
+
+cat(mean(unlist(acc)), '+-', sd(unlist(acc)))
+```
 
 ## Classificando dígitos
 
-Um experimento interessante é a tarefa de classificar dígitos utilizando o algoritmo de Redes Neurais Artificiais. Para isso precisamos relizar os experimentos em duas fases: (1) treinar a rede para reconhecer os dígitos e (2) utilizá-la para classificar novos dígitos. Para isso precisamos carregar as blbiotecas tensorflow e keras:  
+Um experimento interessante é a tarefa de classificar dígitos utilizando o algoritmo de Redes Neurais Artificiais. Para isso precisamos relizar os experimentos em duas fases: (1) treinar a rede para reconhecer os dígitos e (2) utilizá-la para classificar novos dígitos. Para isso precisamos carregar as blbiotecas 'tensorflow' e 'keras'.  
 
 ```{r}
-if(!require('tensorflow')) {
-  install.packages('tensorflow')
-}
-
 require('tensorflow')
-```
-
-```{r}
-if(!require('keras')) {
-  install.packages('keras')
-}
-
 require('keras')
 ```
 
@@ -41,7 +187,7 @@ show_digit <- function(numero) {
 }
 ```
 
-Podemos utilizar a função show_digit para plotar uma amostra de todos os dígitos presentes na base de dados: 
+Podemos utilizar a função show_digit para plotar uma amostra de todos os dígitos presentes na base de dados. 
 
 ```{r}
 par(mfrow=c(2,5))
@@ -51,14 +197,14 @@ plot = lapply(0:9, function(i) {
 })
 ```
 
-Normalizando os dados de treinamento e teste:
+Normalizando os dados de treinamento e teste.
 
 ```{r}
-mnist$train$x <- mnist$train$x/255
-mnist$test$x <- mnist$test$x/255
+mnist$train$x = mnist$train$x/255
+mnist$test$x = mnist$test$x/255
 ```
 
-Construindo uma Rede Neural Artificial usando Keras. Essa rede é composta de uma camanda de entrada flatten (achatada de 28 x 28 neurônios), uma camada oculta dense (128 neurônios com função de ativação linear) e uma camada de saída dense (10 neurônios com função de ativação exponencial normalizada) 
+Construindo uma Rede Neural Artificial usando Keras. Essa rede é composta de uma camanda de entrada flatten (achatada de 28 x 28 neurônios), uma camada oculta dense (128 neurônios com função de ativação linear) e uma camada de saída dense (10 neurônios com função de ativação exponencial normalizada).
 
 ```{r}
 modelo = keras_model_sequential() %>% 
@@ -67,13 +213,21 @@ modelo = keras_model_sequential() %>%
   layer_dense(10, activation = "softmax")
 ```
 
-Informações sobre a Rede Neural Artificial:
+Informações sobre a Rede Neural Artificial.
 
 ```{r}
 summary(modelo)
 ```
 
-Ainda precisamos definir o algoritmo de treinamento, a função de avaliação e a medida de desempenho que vamos utilizar. Podemos fazer isso com a função compile:
+Podemos representar graficamente:
+
+```{r}
+library(deepviz)
+library(magrittr)
+modelo %>% plot_model()
+```
+
+Ainda precisamos definir o algoritmo de treinamento, a função de avaliação e a medida de desempenho que vamos utilizar. Podemos fazer isso com a função compile.
 
 ```{r}
 modelo %>% 
@@ -84,7 +238,7 @@ modelo %>%
   )
 ```
 
-Agora podemos treinar a rede:
+Agora podemos treinar a rede.
 
 ```{r}
 historico = modelo %>% 
@@ -102,24 +256,40 @@ historico = modelo %>%
 plot(historico)
 ```
 
-Agora que sabemos que a rede aprendeu a reconhecer dígitos, podemos verificar seu desempenho no conjunto de teste. Para isso precisamos aplicar essas amostras nunca antes vistas na entrada da rede e obter os valores de saída: 
+Agora que sabemos que a rede aprendeu a reconhecer dígitos, podemos verificar seu desempenho no conjunto de teste. Para isso precisamos aplicar essas amostras nunca antes vistas na entrada da rede e obter os valores de saída. 
 
 ```{r}
-predicao <- predict(modelo, mnist$test$x)
+predicao = predict(modelo, mnist$test$x)
 head(predicao)
 ```
 
-Cada neurônio de saída da rede irá retornar um valor. Aquele neurônio com maior valor deve indicar a classe com maior proababilidade:
+Cada neurônio de saída da rede irá retornar um valor. Aquele neurônio com maior valor deve indicar a classe com maior proababilidade.
 
 ```{r}
 predicao = apply(predicao, 1, which.max)
 predicao[1:6]
 ```
 
-Calculando o desempenho da rede no conjunto de teste:
+Calculando o desempenho da rede no conjunto de teste.
 
 ```{r}
-matriz = table(mnist$test$y, predicao)
-acuracia = sum(diag(matriz))/sum(matriz)
-cat('A acurácia do modelo no conjunto de teste eh:', acuracia)
+acc = acuracia(mnist$test$y, predicao)
+cat('A acurácia do modelo no conjunto de teste eh:', acc)
+```
+
+Agora podemos usar os modelos de Árvore de Decisão, kNN, SVM e Random Forest para comparar com o desempenho com a Rede Neural Artificial. Primeiro vamos construir uma base tabular com a mnist.
+
+```{r}
+tran = data.frame(mnist$train$x, y=as.factor(mnist$train$y))
+test = data.frame(mnist$test$x, y=as.factor(mnist$test$y))
+```
+
+Agora podemos induzir outros modelos.
+
+```{r}
+model = rpart(y~., tran)
+pred = predict(model, test, type='class')
+
+cat('A acurácia da ANN é:', acc)
+cat('A acurácia da DT é', acuracia(test$y, pred))
 ```
