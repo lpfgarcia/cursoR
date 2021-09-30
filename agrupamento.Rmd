@@ -9,6 +9,16 @@ knit: (function(input_file, encoding) { out_dir <- 'docs'; rmarkdown::render(inp
 
 O objetivo desse notebook é aplicar a Linguagem R em Ciência de Dados na resolução de problemas de forma não supervisionada. 
 
+## kMeans
+
+O algoritmo de agrupamento kMeans é um método de quantização vetorial, originário do processamento de sinais, que visa particionar n observações em k clusters em que cada observação pertence ao cluster com a média mais próxima (centros de cluster ou centróide de cluster), servindo como um protótipo de cluster. Isso resulta em um particionamento do espaço de dados.
+
+![Execução do kMean (Adaptado da Wikepedia)](figures/wiki.gif)
+
+O algoritmo kMeans clássico pode ser definido como a soma dos mínimos locais gerados pelos agrupamentos definido como:
+
+![Formulação matemática do kMeans](figures/formula.png)
+
 ## Base USArrests
 
 A base de dados USArrests contém estatísticas por 100.000 habitantes de prisões por agressão, assassinato e estupro em cada um dos 50 estados dos Estados Unidos em 1973.
@@ -48,16 +58,6 @@ usa = scale(usa)
 head(usa)
 summary(usa)
 ```
-
-## kMeans
-
-O algoritmo de agrupamento kMeans é um método de quantização vetorial, originário do processamento de sinais, que visa particionar n observações em k clusters em que cada observação pertence ao cluster com a média mais próxima (centros de cluster ou centróide de cluster), servindo como um protótipo de cluster. Isso resulta em um particionamento do espaço de dados.
-
-![Execução do kMean (Adaptado da Wikepedia)](figures/wiki.gif)
-
-O algoritmo kMeans clássico pode ser definido como a soma dos mínimos locais gerados pelos agrupamentos definido como:
-
-![Formulação matemática do kMeans](figures/formula.png)
 
 Agora nossos dados estão prontos. Vamos aplicar a função de agrupamento kMeans para 2 grupos.
 
