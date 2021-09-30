@@ -72,7 +72,11 @@ Analisando os grupos:
 cls$cluster
 ```
 
-Conseguimso descobrir qual o número de grupos ideal? Uma alternativa é utilizar uma medida de validação de agrupamento como a silhueta. Para isso precisamos carregar a biblioteca cluster.
+Conseguimso descobrir qual o número de grupos ideal? Uma alternativa é utilizar uma medida de validação de agrupamento como a silhueta. 
+
+![Formulação matemática da Silhueta](figures/silhueta.png)
+
+Para isso precisamos carregar a biblioteca cluster.
 
 ```{r}
 require('cluster')
