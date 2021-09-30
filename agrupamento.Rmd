@@ -36,11 +36,11 @@ head(is.na(usa))
 print(any(is.na(usa)))
 ```
 
-Também é muito importante normalizar os dados. Mas poderiamos usar normalização por maxmin.
+Também é muito importante normalizar os dados. Poderiamos usar normalização por maxmin.
 
 ```{r}
 maxmin <- function(x) {
-  return (x - min(x))/(max(x) - min(x))
+  return ((x - min(x))/(max(x) - min(x)))
 }
 
 normalize <- function(df) {
@@ -51,7 +51,7 @@ usa = normalize(usa)
 head(usa)
 ```
 
-Aqui vamos usar a normalização pela média e desvio padrão.
+Mas vamos usar a normalização pela média e desvio padrão.
 
 ```{r}
 usa = scale(usa)
