@@ -140,7 +140,7 @@ do.call("grid.arrange", plot)
 
 ## Comprimindo Áudio com kMeans
 
-Um experimento interessante é a tarefa de comprimir áudio utilizando o algoritmo de agrupamento kMeans. Para isso vamos precisar das bibliotecas audio e seewave.
+Um experimento interessante é a tarefa de comprimir áudio utilizando o algoritmo de agrupamento kMeans. Para a compressão, o número de sinais de áudio precisa ser reduzido. A redução é feita através do agrupamento dos sinais mais frequentes. Para isso vamos precisar das bibliotecas audio e seewave.
 
 ```{r}
 require('audio')
@@ -246,53 +246,52 @@ savewav(novoSom, filename='cmpk100.wav')
 
 ## Comprimindo Imagens com kMeans
 
-Um experimento interessante é a tarefa de comprimir imagens utilizando o algoritmo de agrupamento kMeans. Para a compressão, o número de cores precisa ser reduzido. A redução é feita através do agrupamento das cores e seleção daquelas mais frequentes. Para isso precisamos carregar a blbioteca imager:   
+Um experimento interessante é a tarefa de comprimir imagens utilizando o algoritmo de agrupamento kMeans. Para a compressão, o número de cores precisa ser reduzido. A redução é feita através do agrupamento das cores e seleção daquelas mais frequentes. Para isso precisamos carregar a blbioteca imager.   
 
 ```{r}
 require('imager')
 ```
 
-Algumas imagens são pré-carregadas pelo pacote como a imagem de barcos:
+Algumas imagens são pré-carregadas pelo pacote como a imagem de barcos.
 
 ```{r}
 plot(boats, axes=FALSE)
 ```
 
-Vamos salvar a imagem original em um arquivo e imprimir seu tamanho em disco:
+Vamos salvar a imagem original em um arquivo e imprimir seu tamanho em disco.
 
 ```{r}
 save(boats, file='boats1.zip')
 cat('Tamanho da imagem original:', file.info("boats1.zip")$size, 'bytes')
 ```
 
-Podemos extrair informações sobre o objeto da seguinte forma:
+Podemos extrair informações sobre o objeto da seguinte forma.
 
 ```{r}
 boats
 dim(boats)
 ```
 
-Gerando o data.frame da imagem boats:
+Gerando o data.frame da imagem boats.
 
 ```{r}
 image = as.data.frame(boats)
-# cabecalho do data.frame
 head(image)
 ```
 
-Podemos deixar a imagem borrada:
+Podemos deixar a imagem borrada.
 
 ```{r}
 plot(isoblur(boats, 10), axes=FALSE)
 ```
 
-Podemos deixar a imagem em escala de cinza:
+Podemos deixar a imagem em escala de cinza.
 
 ```{r}
 plot(grayscale(boats), axes=FALSE)
 ```
 
-Podemos remover a cor vermelha da imagem:
+Podemos remover a cor vermelha da imagem.
 
 ```{r}
 test_image = image
@@ -301,7 +300,7 @@ test_image = as.cimg(test_image)
 plot(test_image, axes=FALSE)
 ```
 
-Podemos separar as cores RGB da imagem da seguinte forma: 
+Podemos separar as cores RGB da imagem da seguinte forma. 
 
 ```{r}
 red = image[image$cc == 1, 'value']
@@ -309,27 +308,27 @@ blue = image[image$cc == 2, 'value']
 green = image[image$cc == 3, 'value']
 ```
 
-Reconstruindo a base de dados em um data.frame:
+Reconstruindo a base de dados em um data.frame.
 
 ```{r}
 data = data.frame(red, blue, green)
 ```
 
-Aplicando o kMeans com 10 centroides e 500 iterações máximas:
+Aplicando o kMeans para 10 grupos.
 
 ```{r}
 centroides = kmeans(data, centers=10)
 summary(centroides)
 ```
 
-Adicionando os centroides encontrados em data:
+Adicionando os grupos encontrados no data.
 
 ```{r}
 data[,"cluster"] = centroides$cluster
 head(data)
 ```
 
-O próximo passo é reconstruir a imagem utilizando as cores identificadas como centroides. A imagem será reconstrída com as 10 cores principais:
+O próximo passo é reconstruir a imagem utilizando as cores identificadas como centroides. A imagem será reconstrída com as 10 cores principais.
 
 ```{r}
 new_data = do.call('rbind',
@@ -339,7 +338,7 @@ new_data = do.call('rbind',
 )
 ```
 
-Plotando a nova imagem:
+Plotando a nova imagem.
 
 ```{r}
 new_image = image
@@ -348,14 +347,14 @@ new_image = as.cimg(new_image)
 plot(new_image, axes=FALSE)
 ```
 
-Vamos salvar a nova imagem em um arquivo e imprimir o seu tamanho comprimido em disco:
+Vamos salvar a nova imagem em um arquivo e imprimir o seu tamanho comprimido em disco.
 
 ```{r}
 save(new_image, file='boats2.zip')
 cat('Tamanho da imagem comprimida:', file.info("boats2.zip")$size, 'bytes')
 ```
 
-Antes de continuar com o experimento, vamos construir a função imageGenerator que recebe uma imagem e o número de centroides e retorna uma nova imagem comprimida:
+Antes de continuar com o experimento, vamos construir a função imageGenerator que recebe uma imagem e o número de centroides e retorna uma nova imagem comprimida.
 
 ```{r}
 imageGenerator <- function(image, centers) {
@@ -381,7 +380,7 @@ imageGenerator <- function(image, centers) {
 }
 ```
 
-Usando a função imageGenerator podemos gerar diferentes imagens com diferentes números de cores. Segue o resultado do experimento para 10, 32, 64 e 128 cores:
+Usando a função imageGenerator podemos gerar diferentes imagens com diferentes números de cores. Segue o resultado do experimento para 10, 32, 64 e 128 cores.
 
 ```{r}
 par(mfrow=c(2,2))
