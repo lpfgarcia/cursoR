@@ -16,6 +16,7 @@ A base de dados iris fornece medidas em centímetros das variáveis largura e co
 
 ```{r}
 data('iris')
+head(iris)
 ```
 
 Podemos usar o scatterplot para entender o comportamento das classes 
@@ -23,15 +24,21 @@ Podemos usar o scatterplot para entender o comportamento das classes
 ```{r}
 plot(iris[,1:4], col=iris$Species)
 ```
+É muito importante tratar valores ausêntes. A função is.na e is.nan nos diz se um elemento é NA ou NaN. Combinada com a função any, podemos descobrir se algum elemento da base é NA.
 
-Devemos normalizar, uma vez que podemos utilizar algoritmos de classificação que são suscetíveis aos valores dos atributos.
+```{r}
+print(any(is.na(iris)))
+print(any(apply(iris, 2, is.nan)))
+```
+
+Devemos normalizar os dados, uma vez que existem classificadores que são suscetíveis a escala dos  atributos.
 
 ```{r}
 iris = data.frame(scale(iris[,1:4]), Species=iris$Species)
 summary(iris)
 ```
 
-Depois de carregar a base. Precisamos particionar o conjunto de treinamento e teste. Para essa e outras bases vamos usar o holdout com 70% para treinamento e 30% para teste.
+Depois de normalizar a base, precisamos particionar o conjunto de treinamento e teste. Para essa e outras bases vamos usar o holdout com 70% para treinamento e 30% para teste.
 
 ```{r}
 set.seed(123)
@@ -87,8 +94,25 @@ Inclusive, calcular a taxa de acerto.
 acc = sum(diag(conf))/sum(conf)
 print(acc)
 ```
+Outras meedidas de desempenho poderiam ser utilizadas. Recomendo olhar os pacotes 'caret' e 'mlr'.
 
-Existem outras medidas de avaliação. Recomendo olhar os pacotes 'caret' e 'mlr'.
+```{r}
+#F1-sconre
+f1 <- function(conf) {
+  prc = diag(conf)/colSums(conf)
+  rec = diag(conf)/rowSums(conf)
+  aux = (2 * prc * rec) / (prc + rec)
+  return(mean(aux))
+}
+
+#AUC
+require('ROCR')
+auc <- function(class, pred) {
+  aux = prediction(as.vector(pred), as.vector(class))
+  aux = unlist(performance(aux, "auc")@y.values)
+  return(aux)
+}
+```
 
 Agora podemos induzir outros modelos de Aprendizado de Máquina. Para isso precisamos carregar algumas bibliotecas.
 
@@ -154,7 +178,17 @@ E agora podemos usar.
 
 ```{r}
 idx = kfolds(iris$Species, 10)
+```
 
+Antes vamos conferir se ocorreu contaminação.
+
+```{r}
+intersect(idx[[1]], idx[[2]])
+```
+
+E agora, de fato, podemos usar.
+
+```{r}
 acc = lapply(idx, function(i){
   model = randomForest(Species~., iris[-i,])
   pred = predict(model3, iris[i,])
@@ -163,27 +197,7 @@ acc = lapply(idx, function(i){
 
 cat(mean(unlist(acc)), '+-', sd(unlist(acc)))
 ```
-Outras meedidas de desempenho poderiam ser utilizadas.
 
-```{r}
-#F1-sconre
-f1 <- function(conf) {
-  prc = diag(conf)/colSums(conf)
-  rec = diag(conf)/rowSums(conf)
-  aux = (2 * prc * rec) / (prc + rec)
-  return(mean(aux))
-}
-
-#AUC
-require('ROCR')
-auc <- function(class, pred) {
-  aux = prediction(as.vector(pred), as.vector(class))
-  aux = unlist(performance(aux, "auc")@y.values)
-  return(aux)
-}
-
-
-```
 ## Classificando dígitos
 
 Um experimento interessante é a tarefa de classificar dígitos utilizando o algoritmo de Redes Neurais Artificiais. Para isso precisamos relizar os experimentos em duas fases: (1) treinar a rede para reconhecer os dígitos e (2) utilizá-la para classificar novos dígitos. Para isso precisamos carregar as blbiotecas 'tensorflow' e 'keras'.  
