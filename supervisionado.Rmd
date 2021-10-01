@@ -193,7 +193,7 @@ E agora, de fato, podemos usar.
 ```{r}
 acc = lapply(idx, function(i){
   model = randomForest(Species~., iris[-i,])
-  pred = predict(model3, iris[i,])
+  pred = predict(model, iris[i,])
   acuracia(iris[i,]$Species, pred)
 })
 
@@ -302,7 +302,7 @@ head(predicao)
 Cada neurônio de saída da rede irá retornar um valor. Aquele neurônio com maior valor deve indicar a classe com maior proababilidade.
 
 ```{r}
-predicao = apply(predicao, 1, which.max)
+predicao = apply(predicao, 1, which.max) -1 
 predicao[1:6]
 ```
 
