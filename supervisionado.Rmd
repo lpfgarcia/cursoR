@@ -163,7 +163,27 @@ acc = lapply(idx, function(i){
 
 cat(mean(unlist(acc)), '+-', sd(unlist(acc)))
 ```
+Outras meedidas de desempenho poderiam ser utilizadas.
 
+```{r}
+#F1-sconre
+f1 <- function(conf) {
+  prc = diag(conf)/colSums(conf)
+  rec = diag(conf)/rowSums(conf)
+  aux = (2 * prc * rec) / (prc + rec)
+  return(mean(aux))
+}
+
+#AUC
+require('ROCR')
+auc <- function(class, pred) {
+  aux = prediction(as.vector(pred), as.vector(class))
+  aux = unlist(performance(aux, "auc")@y.values)
+  return(aux)
+}
+
+
+```
 ## Classificando dígitos
 
 Um experimento interessante é a tarefa de classificar dígitos utilizando o algoritmo de Redes Neurais Artificiais. Para isso precisamos relizar os experimentos em duas fases: (1) treinar a rede para reconhecer os dígitos e (2) utilizá-la para classificar novos dígitos. Para isso precisamos carregar as blbiotecas 'tensorflow' e 'keras'.  
