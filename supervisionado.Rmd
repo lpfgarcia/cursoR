@@ -94,7 +94,7 @@ Inclusive, calcular a taxa de acerto.
 acc = sum(diag(conf))/sum(conf)
 print(acc)
 ```
-Outras meedidas de desempenho poderiam ser utilizadas. Recomendo olhar os pacotes 'caret' e 'mlr'.
+Outras meedidas de desempenho poderiam ser utilizadas. Recomendo olhar os pacotes 'caret' e 'mlr' para mais informaões..
 
 ```{r}
 #F1-sconre
@@ -104,7 +104,9 @@ f1 <- function(conf) {
   aux = (2 * prc * rec) / (prc + rec)
   return(mean(aux))
 }
+```
 
+```{r}
 #AUC
 require('ROCR')
 auc <- function(class, pred) {
